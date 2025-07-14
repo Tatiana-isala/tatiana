@@ -1,5 +1,5 @@
 // app/components/MultiLoading.tsx
-
+'use client'
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 
