@@ -228,6 +228,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+export const dynamic = 'force-dynamic'; //
 export default function AbsenceHistoryPage() {
     const { user } = useAuth();
     const router = useRouter();
