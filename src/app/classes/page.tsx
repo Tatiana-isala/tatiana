@@ -83,14 +83,13 @@ export default function ClassManagementPage() {
       
       
 
-      <div className="bg-white p-4 rounded-lg shadow-md">
+      <div className="bg-white  rounded-lg shadow-">
         <h2 className="text-xl font-semibold mb-4">Liste des Classes</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
             <thead>
               <tr className="bg-gray-100">
                 <th className="py-2 px-4 border-b ">Nom</th>
-                <th className="py-2 px-4 border-b ">Niveau</th>
                 <th className="py-2 px-4 border-b ">Section</th>
                 <th className="py-2 px-4 border-b ">Capacité</th>
                 <th className="py-2 px-4 border-b ">Titulaire</th>
@@ -101,7 +100,7 @@ export default function ClassManagementPage() {
               {classrooms.map((classroom) => (
                 <tr key={classroom.id} className="hover:bg-gray-50">
                   <td className="py-2 px-4 border-b  text-center">{classroom.name}</td>
-                  <td className="py-2 px-4 border-b  text-center">{classroom.level}ème</td>
+                  {/* <td className="py-2 px-4 border-b  text-center">{classroom.level}ème</td> */}
                   <td className="py-2 px-4 border-b  text-center">{classroom.section}</td>
                   <td className="py-2 px-4 border-b  text-center">{classroom.capacity}</td>
                   <td className="py-2 px-4 border-b ">

@@ -568,6 +568,8 @@ function Sidebar() {
     { href: '/teacher', label: 'Enseignants', icon: <FaChalkboardTeacher /> },
     { href: '/courses', label: 'Cours', icon: <FaChalkboardTeacher /> },
     { href: '/classes', label: 'Classes', icon: <FaChalkboardTeacher /> },
+    { href: '/schedule', label: 'Planification', icon: <FaChalkboardTeacher /> },
+    { href: '/schedule/view', label: 'Horaire', icon: <FaChalkboardTeacher /> },
     { href: '/absences', label: 'Absences', icon: <FaChalkboardTeacher /> },
     { href: '/communication', label: 'Messages', icon: <FaMessage /> },
     { href: '/comptabilite', label: 'Comptabilité', icon: <FaDollarSign /> },
