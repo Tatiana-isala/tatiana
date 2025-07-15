@@ -102,15 +102,15 @@ export default function ParentsListPage() {
                       <h3 className="text-lg font-medium text-gray-900">{parent.name}</h3>
                       <div className="flex items-center text-sm text-gray-500 mt-1 space-x-3">
                         <span className="flex items-center">
-                          <FaPhone className="mr-1 text-gray-400" />
-                          {parent.phone}
+                          <FaEnvelope className="mr-1 text-gray-400" />
+                          {parent.email}
                         </span>
-                        {parent.email && (
+                        {/* {parent.email && (
                           <span className="flex items-center">
                             <FaEnvelope className="mr-1 text-gray-400" />
                             {parent.email}
                           </span>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>

@@ -98,12 +98,12 @@ export default function StudentDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray- py-8 ">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-800 transition-colors"
+            className="flex items-center bg-gray-50 rounded-xl gap-2 px-4 py-2 text-blue-600 hover:text-blue-800 transition-colors"
           >
             <FaArrowLeft /> Retour
           </button>
@@ -117,11 +117,11 @@ export default function StudentDetails() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded- sha overflow-hidden">
           {/* En-tête avec photo et info de base */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
+          <div className="bg-gradient-to-r rounded-xl from-blue-600 to-blue-800 text-white p-6">
             <div className="flex items-center gap-6">
-              <div className="relative w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-md">
+              <div className="relative w-24 h-24 bg-white rounded-full flex items-center justify-center ">
                 <FaUser className="text-4xl text-blue-600" />
               </div>
               <div>
@@ -136,7 +136,7 @@ export default function StudentDetails() {
             </div>
           </div>
 
-          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="my-2 grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Colonne 1: Informations personnelles */}
             <div className="space-y-6">
               <div className="border border-gray-200 rounded-lg overflow-hidden">

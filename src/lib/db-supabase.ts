@@ -25,14 +25,7 @@ import {
 
 // Ajoutez ces constantes en haut du fichier
 const REALTIME_CHANNEL_NAME = 'school_sync_channel';
-const REALTIME_EVENTS = {
-  USERS_UPDATED: 'USERS_UPDATED',
-  STUDENTS_UPDATED: 'STUDENTS_UPDATED',
-  COURSES_UPDATED: 'COURSES_UPDATED',
-  SCHEDULE_UPDATED: 'SCHEDULE_UPDATED',
-  FEES_UPDATED: 'FEES_UPDATED',
-  PAYMENTS_UPDATED: 'PAYMENTS_UPDATED'
-};
+
 
 
 // Configuration Supabase

@@ -95,7 +95,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-2 bg-gray-50 min-h-screen">
       <SyncManager/>
       <h1 className="text-3xl font-bold mb-8 text-gray-800">Tableau de Bord</h1>
       

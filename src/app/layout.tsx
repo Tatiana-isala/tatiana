@@ -656,10 +656,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <html lang="fr">
-      <body className="bg-gray-100 min-h-screen">
+      <body className="bg-gray-100 min-h-screen pt-5">
         <AuthProvider>
           {showSidebar && <AuthAwareSidebar />}
-          <main className={`transition-all duration-300 ${showSidebar ? 'md:ml-64' : ''} p-4`}>
+          <main className={`transition-all duration-300 ${showSidebar ? 'md:ml-64' : ''} `}>
             <div className="bg-white rounded-lg shadow-sm p-3">{children}</div>
           </main>
           <ToastContainer

@@ -693,6 +693,7 @@ import {
   FiMessageSquare
 } from 'react-icons/fi'
 import { PdfReportGenerator } from '@/components/PdfReportGenerator'
+import AnnoncePage from '@/components/AnnoncePage'
 
 export default function ParentPage() {
   const { user } = useAuth()
@@ -956,30 +957,7 @@ export default function ParentPage() {
               </div>
             ) : (
               <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-                {announcements.map((announcement, index) => (
-                  <div 
-                    key={index} 
-                    className={`p-6 hover:bg-gray-50 cursor-pointer transition-colors ${!announcement.isRead ? 'bg-blue-50' : ''}`}
-                    onClick={() => handleMarkAsRead(announcement.id)}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className={`text-lg font-semibold ${!announcement.isRead ? 'text-blue-800' : 'text-gray-800'}`}>
-                        {announcement.title}
-                        {!announcement.isRead && (
-                          <span className="ml-2 inline-block h-2 w-2 rounded-full bg-blue-600"></span>
-                        )}
-                      </h3>
-                      <span className="text-sm text-gray-500 whitespace-nowrap">
-                        {new Date(announcement.created_at).toLocaleDateString('fr-FR', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </span>
-                    </div>
-                    <p className="text-gray-600">{announcement.content}</p>
-                  </div>
-                ))}
+               <AnnoncePage/>
               </div>
             )}
           </div>

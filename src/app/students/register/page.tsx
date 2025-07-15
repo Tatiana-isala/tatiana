@@ -115,7 +115,7 @@ export default function StudentRegistration() {
   }
 
   return (
-    <div className="min-h-screen   px-4">
+    <div className="min-h-screen   ">
       <div className="max-w-4xl mx-auto bg-white rounded-lg  overflow-hidden">
         <div className="bg-blue-600 text-white p-4">
           <div className="flex items-center justify-between">
@@ -125,7 +125,7 @@ export default function StudentRegistration() {
             >
               <FaArrowLeft className="mr-2" /> Retour
             </button>
-            <h1 className="text-2xl font-bold">Enregistrement d'un nouvel étudiant</h1>
+            <h1 className="text-2xl font-bold">New Student</h1>
             <div className="w-8"></div>
           </div>
         </div>
