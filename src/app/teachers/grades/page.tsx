@@ -54,7 +54,7 @@ export default function GradeManagement() {
         teacherCourses.forEach(course => {
           const courseAssignments = assignments.filter(ass => ass.courseId === course.id)
           classroomsMap[course.id] = teacherClassrooms.filter(classroom => 
-            courseAssignments.some(ass => ass.classroomId === classroom.id)
+            courseAssignments.some(ass => ass.classroom_id === classroom.id)
           )
         })
 
@@ -111,7 +111,7 @@ export default function GradeManagement() {
         id: uuidv4(),
         studentId,
         courseId: selectedCourse?.id || '',
-        classroomId: selectedClassroom?.id || '',
+        classroom_id: selectedClassroom?.id || '',
         period: "unique",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -155,7 +155,7 @@ export default function GradeManagement() {
               createOrUpdateGrade({
                 studentId: student.id,
                 courseId: selectedCourse.id,
-                classroomId: selectedClassroom.id,
+                classroom_id: selectedClassroom.id,
                 period: "unique",
                 P1: grade.P1,
                 P2: grade.P2,

@@ -22,7 +22,7 @@ interface User {
   phone: string;
   is_online?: boolean;
   last_sign_in_at?: string | null;
-  createdAt: string;
+  created_at: string;
 }
 
 interface UserFormData {
@@ -37,37 +37,37 @@ interface Student {
   id: string;
   matricule: string;
   nom: string;
-  postNom: string;
+  post_nom: string;
   prenom: string;
-  dateNaissance: string;
-  lieuNaissance: string;
+  date_naissance: string;
+  lieu_naissance: string;
   sexe: 'M' | 'F';
   nationalite: string;
   adresse: string;
   contacts: string[];
-  niveauEtude: string;
-  etablissementPrecedent: string;
-  optionChoisie: string;
-  tuteurId: string | null;
-  classroomId?: string; // Ajoutez cette ligne
-  photoUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  niveau_etude: string;
+  etablissement_precedent: string;
+  option_choisie: string;
+  tuteur_id: string | null;
+  classroom_id?: string; 
+  photo_url?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface StudentFormData {
   nom: string;
-  postNom: string;
+  post_nom: string;
   prenom: string;
-  dateNaissance: string;
-  lieuNaissance: string;
+  date_naissance: string;
+  lieu_naissance: string;
   sexe: 'M' | 'F';
   nationalite: string;
   adresse: string;
   contacts: string[];
-  niveauEtude: string;
-  etablissementPrecedent: string;
-  optionChoisie: string;
+  niveau_etude: string;
+  etablissement_precedent: string;
+  option_choisie: string;
 }
 
 interface TeacherInfo {
@@ -77,14 +77,14 @@ interface TeacherInfo {
   classesResponsables: string[];
   anneesExperience: number;
   statut: 'titulaire' | 'remplacant' | 'stagiaire';
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 export interface ClassroomStudent {
   id: string;
-  classroomId: string;
+  classroom_id: string;
   studentId: string;
-  createdAt: string;
+  created_at: string;
 }
 
 interface Classroom {
@@ -103,8 +103,8 @@ interface Classroom {
   teacherId: string | null;
   capacity: number; // 30 pour Général (7/8ème), 40 pour les sections
   studentIds: string[];
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 interface ClassroomFormData {
   name: string;
@@ -125,18 +125,18 @@ export interface Course {
   teacherId: string;
   color: string;
   isActive: boolean;
-  classroomIds?: string[];
-  createdAt: string;
-  updatedAt: string;
+  classroom_ids?: string[];
+  created_at: string;
+  updated_at: string;
 }
 
 // Ajoutez ces interfaces
 export interface CourseAssignment {
   id: string;
   courseId: string;
-  classroomId: string;
+  classroom_id: string;
   teacherId: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface CourseFormData {
@@ -148,7 +148,7 @@ export interface CourseFormData {
 
 export interface ScheduleItem {
   id: string;
-  classroomId: string;
+  classroom_id: string;
   day: 'LUNDI' | 'MARDI' | 'MERCREDI' | 'JEUDI' | 'VENDREDI' | 'SAMEDI';
   startTime: string; // Format "HH:MM"
   endTime: string;   // Format "HH:MM"
@@ -156,7 +156,7 @@ export interface ScheduleItem {
 }
 
 export interface ScheduleFormData {
-  classroomId: string;
+  classroom_id: string;
   day: string;
   startTime: string;
   endTime: string;
@@ -169,7 +169,7 @@ export interface ScheduleFormData {
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Configuration IndexedDB
-const DB_NAME = 'SchoolDb';
+const DB_NAME = 'State2';
 const DB_VERSION = 1; // Version incrémentée pour ajouter les classes
 const USERS_STORE = 'users';
 const STUDENTS_STORE = 'students';
@@ -261,7 +261,7 @@ export const initDB = (): Promise<IDBDatabase> => {
         if (!db.objectStoreNames.contains(STUDENTS_STORE)) {
           const studentStore = db.createObjectStore(STUDENTS_STORE, { keyPath: 'id' });
           studentStore.createIndex('matricule', 'matricule', { unique: true });
-          studentStore.createIndex('tuteurId', 'tuteurId', { unique: false });
+          studentStore.createIndex('tuteur_id', 'tuteur_id', { unique: false });
           studentStore.createIndex('nom', 'nom', { unique: false });
         }
 
@@ -273,8 +273,8 @@ export const initDB = (): Promise<IDBDatabase> => {
 
         if (!db.objectStoreNames.contains('schedule')) {
           const scheduleStore = db.createObjectStore('schedule', { keyPath: 'id' });
-          scheduleStore.createIndex('classroomId', 'classroomId', { unique: false });
-          scheduleStore.createIndex('by_day_classroom', ['day', 'classroomId'], { unique: false });
+          scheduleStore.createIndex('classroom_id', 'classroom_id', { unique: false });
+          scheduleStore.createIndex('by_day_classroom', ['day', 'classroom_id'], { unique: false });
         }
 
 
@@ -284,7 +284,7 @@ export const initDB = (): Promise<IDBDatabase> => {
 
    if (!db.objectStoreNames.contains('feeStructures')) {
           const feeStore = db.createObjectStore('feeStructures', { keyPath: 'id' });
-          feeStore.createIndex('classroomId', 'classroomId', { unique: true });
+          feeStore.createIndex('classroom_id', 'classroom_id', { unique: true });
         }
 
 
@@ -294,7 +294,7 @@ export const initDB = (): Promise<IDBDatabase> => {
  if (!db.objectStoreNames.contains('payments')) {
           const paymentStore = db.createObjectStore('payments', { keyPath: 'id' });
           paymentStore.createIndex('studentId', 'studentId', { unique: false });
-          paymentStore.createIndex('classroomId', 'classroomId', { unique: false });
+          paymentStore.createIndex('classroom_id', 'classroom_id', { unique: false });
           paymentStore.createIndex('matricule', 'matricule', { unique: false });
           paymentStore.createIndex('date', 'date', { unique: false });
           paymentStore.createIndex('paymentType', 'paymentType', { unique: false });
@@ -311,7 +311,7 @@ if (!db.objectStoreNames.contains('communications')) {
   commStore.createIndex('by_sender', 'senderId', { unique: false });
   commStore.createIndex('by_recipient', 'recipientId', { unique: false });
   commStore.createIndex('by_type', 'type', { unique: false });
-  commStore.createIndex('by_created', 'createdAt', { unique: false });
+  commStore.createIndex('by_created', 'created_at', { unique: false });
   commStore.createIndex('parentMessageId', 'parentMessageId', { unique: false });
 }
 
@@ -335,9 +335,9 @@ if (!db.objectStoreNames.contains('communications')) {
 if (!db.objectStoreNames.contains('courseAssignments')) {
   const caStore = db.createObjectStore('courseAssignments', { keyPath: 'id' });
   caStore.createIndex('courseId', 'courseId', { unique: false });
-  caStore.createIndex('classroomId', 'classroomId', { unique: false });
+  caStore.createIndex('classroom_id', 'classroom_id', { unique: false });
   caStore.createIndex('teacherId', 'teacherId', { unique: false });
-  caStore.createIndex('by_course_classroom', ['courseId', 'classroomId'], { unique: true });
+  caStore.createIndex('by_course_classroom', ['courseId', 'classroom_id'], { unique: true });
 }
 
 if (!db.objectStoreNames.contains('grades')) {
@@ -365,7 +365,7 @@ let gradeStore: IDBObjectStore;
           gradeStore.createIndex('by_student_course_period', ['studentId', 'courseId', 'period'], { unique: false });
         }
         if (!gradeStore.indexNames.contains('by_course_classroom')) {
-          gradeStore.createIndex('by_course_classroom', ['courseId', 'classroomId'], { unique: false });
+          gradeStore.createIndex('by_course_classroom', ['courseId', 'classroom_id'], { unique: false });
         }
 
 
@@ -375,7 +375,7 @@ if (!db.objectStoreNames.contains('communications')) {
   commStore.createIndex('by_sender', 'senderId', { unique: false });
   commStore.createIndex('by_recipient', 'recipientId', { unique: false });
   commStore.createIndex('by_type', 'type', { unique: false });
-  commStore.createIndex('by_created', 'createdAt', { unique: false });
+  commStore.createIndex('by_created', 'created_at', { unique: false });
 }
 
 
@@ -385,7 +385,7 @@ if (!db.objectStoreNames.contains('communications')) {
 if (!db.objectStoreNames.contains('bulkEmails')) {
   const bulkEmailStore = db.createObjectStore('bulkEmails', { keyPath: 'id' });
   bulkEmailStore.createIndex('by_sender', 'senderId', { unique: false });
-  bulkEmailStore.createIndex('by_created', 'createdAt', { unique: false });
+  bulkEmailStore.createIndex('by_created', 'created_at', { unique: false });
 }
 
 
@@ -398,14 +398,14 @@ if (!db.objectStoreNames.contains('absences')) {
   const absenceStore = db.createObjectStore('absences', { keyPath: 'id' });
   absenceStore.createIndex('by_student', 'studentId', { unique: false });
   absenceStore.createIndex('by_date', 'date', { unique: false });
-  absenceStore.createIndex('by_classroom', 'classroomId', { unique: false });
+  absenceStore.createIndex('by_classroom', 'classroom_id', { unique: false });
   absenceStore.createIndex('by_student_date', ['studentId', 'date'], { unique: true });
 }
 
 if (!db.objectStoreNames.contains('absenceRecords')) {
   const recordStore = db.createObjectStore('absenceRecords', { keyPath: 'id' });
   recordStore.createIndex('by_date', 'date', { unique: false });
-  recordStore.createIndex('by_classroom', 'classroomId', { unique: false });
+  recordStore.createIndex('by_classroom', 'classroom_id', { unique: false });
 }
 
 
@@ -435,9 +435,9 @@ if (!db.objectStoreNames.contains('absenceRecords')) {
         // Création de la store classroomStudents
         if (!db.objectStoreNames.contains('classroomStudents')) {
           const csStore = db.createObjectStore('classroomStudents', { keyPath: 'id' });
-          csStore.createIndex('classroomId', 'classroomId', { unique: false });
+          csStore.createIndex('classroom_id', 'classroom_id', { unique: false });
           csStore.createIndex('studentId', 'studentId', { unique: true }); // Un élève ne peut être que dans une classe
-          csStore.createIndex('by_classroom_student', ['classroomId', 'studentId'], { unique: true });
+          csStore.createIndex('by_classroom_student', ['classroom_id', 'studentId'], { unique: true });
         }
       };
 
@@ -501,8 +501,8 @@ async function checkAndAddDefaultClasses(db: IDBDatabase): Promise<void> {
             teacherId: null,
             capacity: cls.capacity,
             studentIds: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           };
           
           try {
@@ -542,7 +542,7 @@ export async function createUser(userData: UserFormData): Promise<User> {
     phone: userData.phone,
     is_online: true,
     last_sign_in_at: new Date().toISOString(),
-    createdAt: new Date().toISOString()
+    created_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -664,9 +664,9 @@ export async function createStudent(studentData: StudentFormData): Promise<Stude
     id: uuidv4(),
     matricule,
     ...studentData,
-    tuteurId: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    tuteur_id: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -703,7 +703,7 @@ export async function getStudentById(id: string): Promise<Student | null> {
   });
 }
 
-export async function assignTutor(studentId: string, tuteurId: string): Promise<void> {
+export async function assignTutor(studentId: string, tuteur_id: string): Promise<void> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STUDENTS_STORE, 'readwrite');
@@ -713,8 +713,8 @@ export async function assignTutor(studentId: string, tuteurId: string): Promise<
     request.onsuccess = () => {
       const student = request.result;
       if (student) {
-        student.tuteurId = tuteurId;
-        student.updatedAt = new Date().toISOString();
+        student.tuteur_id = tuteur_id;
+        student.updated_at = new Date().toISOString();
         
         const updateRequest = store.put(student);
         updateRequest.onsuccess = () => resolve();
@@ -740,7 +740,7 @@ export async function updateStudent(id: string, studentData: Partial<StudentForm
         const updatedStudent = {
           ...student,
           ...studentData,
-          updatedAt: new Date().toISOString()
+          updated_at: new Date().toISOString()
         };
         const updateRequest = store.put(updatedStudent);
         updateRequest.onsuccess = () => resolve();
@@ -770,7 +770,7 @@ export async function getStudentByTutorId(tutorId: string): Promise<Student[]> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STUDENTS_STORE, 'readonly');
     const store = tx.objectStore(STUDENTS_STORE);
-    const index = store.index('tuteurId');
+    const index = store.index('tuteur_id');
     const request = index.getAll(tutorId);
     
     request.onsuccess = () => resolve(request.result as Student[] || []);
@@ -794,7 +794,7 @@ export async function getTeacherInfo(userId: string): Promise<TeacherInfo | null
 
 export async function addTeacherInfo(
   userId: string, 
-  teacherData: Omit<TeacherInfo, 'id' | 'userId' | 'createdAt' | 'updatedAt'>
+  teacherData: Omit<TeacherInfo, 'id' | 'userId' | 'created_at' | 'updated_at'>
 ): Promise<void> {
   const db = await initDB();
   
@@ -802,8 +802,8 @@ export async function addTeacherInfo(
     id: uuidv4(),
     userId,
     ...teacherData,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -834,7 +834,7 @@ export async function updateTeacherInfo(
         const updatedInfo = {
           ...existingData,
           ...teacherData,
-          updatedAt: new Date().toISOString()
+          updated_at: new Date().toISOString()
         };
         const updateRequest = store.put(updatedInfo);
         updateRequest.onsuccess = () => resolve();
@@ -918,8 +918,8 @@ export async function createClassroom(classroomData: ClassroomFormData): Promise
       ? Math.min(classroomData.capacity, 30)
       : Math.min(classroomData.capacity, 40),
     studentIds: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -969,7 +969,7 @@ export async function updateClassroom(id: string, classroomData: Partial<Classro
         const updatedClassroom = {
           ...classroom,
           ...classroomData,
-          updatedAt: new Date().toISOString()
+          updated_at: new Date().toISOString()
         };
         const updateRequest = store.put(updatedClassroom);
         updateRequest.onsuccess = () => resolve();
@@ -982,8 +982,8 @@ export async function updateClassroom(id: string, classroomData: Partial<Classro
   });
 }
 
-export async function assignTeacherToClassroom(classroomId: string, teacherId: string | null): Promise<void> {
-  return updateClassroom(classroomId, { teacherId });
+export async function assignTeacherToClassroom(classroom_id: string, teacherId: string | null): Promise<void> {
+  return updateClassroom(classroom_id, { teacherId });
 }
 
 export async function getClassroomsByTeacher(teacherId: string): Promise<Classroom[]> {
@@ -1018,7 +1018,7 @@ export async function exportToSupabase(): Promise<number> {
         phone: user.phone,
         is_online: user.is_online,
         last_sign_in_at: user.last_sign_in_at,
-        created_at: user.createdAt
+        created_at: user.created_at
       })),
       { onConflict: 'id' }
     );
@@ -1057,7 +1057,7 @@ export async function importFromSupabase(): Promise<number> {
           phone: remoteUser.phone,
           is_online: remoteUser.is_online,
           last_sign_in_at: remoteUser.last_sign_in_at,
-          createdAt: remoteUser.created_at || new Date().toISOString()
+          created_at: remoteUser.created_at || new Date().toISOString()
         };
 
         const request = store.put(user);
@@ -1081,7 +1081,7 @@ export async function importFromSupabase(): Promise<number> {
 
 
 // Ajoutez ces nouvelles fonctions
-export async function addStudentToClassroom(classroomId: string, studentId: string): Promise<void> {
+export async function addStudentToClassroom(classroom_id: string, studentId: string): Promise<void> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(['classrooms', 'classroomStudents'], 'readwrite');
@@ -1101,22 +1101,22 @@ export async function addStudentToClassroom(classroomId: string, studentId: stri
       // Ajouter la relation
       const relation: ClassroomStudent = {
         id: uuidv4(),
-        classroomId,
+        classroom_id,
         studentId,
-        createdAt: new Date().toISOString()
+        created_at: new Date().toISOString()
       };
 
       const addRequest = csStore.add(relation);
       
       addRequest.onsuccess = () => {
         // Mettre à jour la classe
-        const getClassRequest = classroomStore.get(classroomId);
+        const getClassRequest = classroomStore.get(classroom_id);
         getClassRequest.onsuccess = () => {
           const classroom = getClassRequest.result;
           if (classroom) {
             if (!classroom.studentIds) classroom.studentIds = [];
             classroom.studentIds.push(studentId);
-            classroom.updatedAt = new Date().toISOString();
+            classroom.updated_at = new Date().toISOString();
             
             const updateRequest = classroomStore.put(classroom);
             updateRequest.onsuccess = () => resolve();
@@ -1133,15 +1133,15 @@ export async function addStudentToClassroom(classroomId: string, studentId: stri
   });
 }
 
-export async function getStudentsInClassroom(classroomId: string): Promise<Student[]> {
+export async function getStudentsInClassroom(classroom_id: string): Promise<Student[]> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(['classroomStudents', 'students'], 'readonly');
     const csStore = tx.objectStore('classroomStudents');
     const studentStore = tx.objectStore('students');
 
-    const index = csStore.index('classroomId');
-    const request = index.getAll(classroomId);
+    const index = csStore.index('classroom_id');
+    const request = index.getAll(classroom_id);
 
     request.onsuccess = async () => {
       const relations = request.result as ClassroomStudent[];
@@ -1165,7 +1165,7 @@ export async function getStudentsInClassroom(classroomId: string): Promise<Stude
 }
 
 
-export async function removeStudentFromClassroom(classroomId: string, studentId: string): Promise<void> {
+export async function removeStudentFromClassroom(classroom_id: string, studentId: string): Promise<void> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(['classrooms', 'classroomStudents'], 'readwrite');
@@ -1188,14 +1188,14 @@ export async function removeStudentFromClassroom(classroomId: string, studentId:
       
       deleteRequest.onsuccess = () => {
         // Mettre à jour la classe
-        const getClassRequest = classroomStore.get(classroomId);
+        const getClassRequest = classroomStore.get(classroom_id);
         getClassRequest.onsuccess = () => {
           const classroom = getClassRequest.result; // Correction: .result au lieu de _result
           if (classroom) {
             if (classroom.studentIds) {
               classroom.studentIds = classroom.studentIds.filter((id: string) => id !== studentId); // Ajout du typage
             }
-            classroom.updatedAt = new Date().toISOString();
+            classroom.updated_at = new Date().toISOString();
             
             const updateRequest = classroomStore.put(classroom);
             updateRequest.onsuccess = () => resolve();
@@ -1246,13 +1246,13 @@ export async function removeStudentFromClassroom(classroomId: string, studentId:
 
 // Fonctions CRUD pour les horaires
 
-export async function getScheduleForClassroom(classroomId: string): Promise<ScheduleItem[]> {
+export async function getScheduleForClassroom(classroom_id: string): Promise<ScheduleItem[]> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('schedule', 'readonly');
     const store = tx.objectStore('schedule');
-    const index = store.index('classroomId');
-    const request = index.getAll(classroomId);
+    const index = store.index('classroom_id');
+    const request = index.getAll(classroom_id);
     
     request.onsuccess = () => resolve(request.result as ScheduleItem[] || []);
     request.onerror = () => reject(request.error);
@@ -1278,7 +1278,7 @@ export async function deleteScheduleItem(itemId: string): Promise<void> {
 //   const course: Course = {
 //     id: uuidv4(),
 //     ...courseData,
-//     createdAt: new Date().toISOString()
+//     created_at: new Date().toISOString()
 //   };
 
 //   return new Promise((resolve, reject) => {
@@ -1299,8 +1299,8 @@ export async function createCourse(courseData: CourseFormData): Promise<Course> 
         teacherId: courseData.teacherId,
         color: courseData.color,
         isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
     };
 
     return new Promise((resolve, reject) => {
@@ -1385,7 +1385,7 @@ export async function getCompleteSchedule(): Promise<
       ]);
 
       const completeSchedule = allSchedule.map(item => {
-        const classroom = allClassrooms.find(c => c.id === item.classroomId);
+        const classroom = allClassrooms.find(c => c.id === item.classroom_id);
         const course = allCourses.find(c => c.id === item.courseId) || null;
         return { ...item, classroom, course };
       });
@@ -1404,13 +1404,13 @@ export async function createScheduleItem(
   const db = await initDB();
 
   // Vérifier que la classe existe
-  const classroom = await getClassroomById(scheduleData.classroomId);
+  const classroom = await getClassroomById(scheduleData.classroom_id);
   if (!classroom) {
     throw new Error('Classe non trouvée');
   }
 
   // Vérifier les conflits d'horaire
-  const existingItems = await getScheduleForClassroom(scheduleData.classroomId);
+  const existingItems = await getScheduleForClassroom(scheduleData.classroom_id);
   const hasConflict = existingItems.some(
     item =>
       item.day === scheduleData.day &&
@@ -1469,12 +1469,12 @@ export async function getStudentClass(studentId: string): Promise<Classroom | nu
     
     getStudentRequest.onsuccess = () => {
       const student = getStudentRequest.result;
-      if (!student || !student.classroomId) {
+      if (!student || !student.classroom_id) {
         resolve(null);
         return;
       }
 
-      const getClassRequest = classroomStore.get(student.classroomId);
+      const getClassRequest = classroomStore.get(student.classroom_id);
       getClassRequest.onsuccess = () => resolve(getClassRequest.result);
       getClassRequest.onerror = () => reject(getClassRequest.error);
     };
@@ -1504,7 +1504,7 @@ export async function getClassroomForStudent(studentId: string): Promise<Classro
       }
 
       // Récupérer la classe correspondante
-      const getClassRequest = classroomStore.get(relation.classroomId);
+      const getClassRequest = classroomStore.get(relation.classroom_id);
       getClassRequest.onsuccess = () => resolve(getClassRequest.result as Classroom | null);
       getClassRequest.onerror = () => reject(getClassRequest.error);
     };
@@ -1518,16 +1518,16 @@ export async function getClassroomForStudent(studentId: string): Promise<Classro
 
 export async function assignCourseToClassroom(
   courseId: string, 
-  classroomId: string,
+  classroom_id: string,
   teacherId: string
 ): Promise<CourseAssignment> {
   const db = await initDB();
   const assignment: CourseAssignment = {
     id: uuidv4(),
     courseId,
-    classroomId,
+    classroom_id,
     teacherId,
-    createdAt: new Date().toISOString()
+    created_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -1540,15 +1540,15 @@ export async function assignCourseToClassroom(
   });
 }
 
-export async function getCoursesForClassroom(classroomId: string): Promise<Course[]> {
+export async function getCoursesForClassroom(classroom_id: string): Promise<Course[]> {
   const db = await initDB();
   return new Promise(async (resolve, reject) => {
     try {
       const assignments = await new Promise<CourseAssignment[]>((res, rej) => {
         const tx = db.transaction('courseAssignments', 'readonly');
         const store = tx.objectStore('courseAssignments');
-        const index = store.index('classroomId');
-        const request = index.getAll(classroomId);
+        const index = store.index('classroom_id');
+        const request = index.getAll(classroom_id);
         request.onsuccess = () => res(request.result || []);
         request.onerror = () => rej(request.error);
       });
@@ -1570,13 +1570,13 @@ export async function getCoursesForClassroom(classroomId: string): Promise<Cours
   });
 }
 
-export async function removeCourseFromClassroom(classroomId: string, courseId: string): Promise<void> {
+export async function removeCourseFromClassroom(classroom_id: string, courseId: string): Promise<void> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('courseAssignments', 'readwrite');
     const store = tx.objectStore('courseAssignments');
     const index = store.index('by_course_classroom');
-    const request = index.get([courseId, classroomId]);
+    const request = index.get([courseId, classroom_id]);
 
     request.onsuccess = () => {
       const assignment = request.result;
@@ -1646,7 +1646,7 @@ export async function getClassroomsForTeacher(teacherId: string): Promise<Classr
         request.onerror = () => rej(request.error);
       });
 
-      const classroomIds = Array.from(new Set(courseAssignments.map(ass => ass.classroomId)));
+      const classroom_ids = Array.from(new Set(courseAssignments.map(ass => ass.classroom_id)));
       
       // Classes where the teacher is responsible
       const responsibleClasses = await new Promise<Classroom[]>((res, rej) => {
@@ -1659,13 +1659,13 @@ export async function getClassroomsForTeacher(teacherId: string): Promise<Classr
       });
 
       // Combine both lists without duplicates
-      const allClassroomIds = Array.from(new Set([
-        ...classroomIds,
+      const allClassroom_ids = Array.from(new Set([
+        ...classroom_ids,
         ...responsibleClasses.map(c => c.id)
       ]));
 
       const classrooms = await Promise.all(
-        allClassroomIds.map(id => 
+        allClassroom_ids.map(id => 
           new Promise<Classroom>((res, rej) => {
             const tx = db.transaction(CLASSROOMS_STORE, 'readonly');
             const store = tx.objectStore(CLASSROOMS_STORE);
@@ -1699,7 +1699,7 @@ export interface Grade {
   id: string;
   studentId: string;
   courseId: string;
-  classroomId: string;
+  classroom_id: string;
   period: string;
   P1?: number;
   P2?: number;
@@ -1711,14 +1711,14 @@ export interface Grade {
   S2?: number;
   total?: number;
   appreciation?: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface GradeFormData {
   studentId: string;
   courseId: string;
-  classroomId: string;
+  classroom_id: string;
   period: string;
   P1?: number;
   P2?: number;
@@ -1772,7 +1772,7 @@ export async function createOrUpdateGrade(gradeData: GradeFormData): Promise<Gra
           S2,
           total,
           appreciation,
-          updatedAt: new Date().toISOString()
+          updated_at: new Date().toISOString()
         };
         const updateRequest = store.put(updatedGrade);
         updateRequest.onsuccess = () => resolve(updatedGrade);
@@ -1785,8 +1785,8 @@ export async function createOrUpdateGrade(gradeData: GradeFormData): Promise<Gra
           S2,
           total,
           appreciation,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         };
         const addRequest = store.add(newGrade);
         addRequest.onsuccess = () => resolve(newGrade);
@@ -1802,7 +1802,7 @@ export async function createOrUpdateGrade(gradeData: GradeFormData): Promise<Gra
 export async function getStudentGradesForCourse(
   studentId: string, 
   courseId: string,
-  classroomId: string
+  classroom_id: string
 ): Promise<Grade | null> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -1819,7 +1819,7 @@ export async function getStudentGradesForCourse(
 
 
 // db.ts
-export async function getGradesByCourse(courseId: string, classroomId: string): Promise<Grade[]> {
+export async function getGradesByCourse(courseId: string, classroom_id: string): Promise<Grade[]> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('grades', 'readonly');
@@ -1827,7 +1827,7 @@ export async function getGradesByCourse(courseId: string, classroomId: string): 
     
     // Correction: Utiliser un index correct
     const index = store.index('by_course_classroom');
-    const request = index.getAll([courseId, classroomId]);
+    const request = index.getAll([courseId, classroom_id]);
 
     request.onsuccess = () => resolve(request.result as Grade[] || []);
     request.onerror = () => reject(request.error);
@@ -1887,12 +1887,12 @@ export async function getCourseAssignmentsForTeacher(teacherId: string): Promise
 // Ajoutez ces nouvelles interfaces dans db.ts
 export interface FeeStructure {
   id: string;
-  classroomId: string;
+  classroom_id: string;
   schoolFee: number; // Frais scolaires
   minerval: number; // Minerval
   otherFees: number; // Frais connexes
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Payment {
@@ -1900,7 +1900,7 @@ export interface Payment {
   studentId: string;
   matricule: string;
   studentName: string;
-  classroomId: string;
+  classroom_id: string;
   classroomName: string;
   paymentType: 'CASH' | 'BOURSE' | 'BANQUE';
   amount: number;
@@ -1908,11 +1908,11 @@ export interface Payment {
   description?: string;
   date: string;
   recordedBy: string; // ID de l'utilisateur qui a enregistré
-  createdAt: string;
+  created_at: string;
 }
 
 export interface FeeStructureFormData {
-  classroomId: string;
+  classroom_id: string;
   schoolFee: number;
   minerval: number;
   otherFees: number;
@@ -1938,21 +1938,21 @@ export async function setFeeStructure(feeData: FeeStructureFormData): Promise<Fe
   const feeStructure: FeeStructure = {
     id: uuidv4(),
     ...feeData,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
     const tx = db.transaction('feeStructures', 'readwrite');
     const store = tx.objectStore('feeStructures');
-    const index = store.index('classroomId');
-    const request = index.get(feeData.classroomId);
+    const index = store.index('classroom_id');
+    const request = index.get(feeData.classroom_id);
 
     request.onsuccess = () => {
       const existing = request.result;
       if (existing) {
         // Mise à jour si existe déjà
-        const updated = { ...existing, ...feeData, updatedAt: new Date().toISOString() };
+        const updated = { ...existing, ...feeData, updated_at: new Date().toISOString() };
         const updateRequest = store.put(updated);
         updateRequest.onsuccess = () => resolve(updated);
         updateRequest.onerror = () => reject(updateRequest.error);
@@ -1967,13 +1967,13 @@ export async function setFeeStructure(feeData: FeeStructureFormData): Promise<Fe
   });
 }
 
-export async function getFeeStructure(classroomId: string): Promise<FeeStructure | null> {
+export async function getFeeStructure(classroom_id: string): Promise<FeeStructure | null> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('feeStructures', 'readonly');
     const store = tx.objectStore('feeStructures');
-    const index = store.index('classroomId');
-    const request = index.get(classroomId);
+    const index = store.index('classroom_id');
+    const request = index.get(classroom_id);
 
     request.onsuccess = () => resolve(request.result || null);
     request.onerror = () => reject(request.error);
@@ -2018,8 +2018,8 @@ export async function recordPayment(paymentData: PaymentFormData, userId: string
     id: uuidv4(),
     studentId: student.id,
     matricule: student.matricule,
-    studentName: `${student.nom} ${student.postNom} ${student.prenom}`,
-    classroomId: classroom?.id || '',
+    studentName: `${student.nom} ${student.post_nom} ${student.prenom}`,
+    classroom_id: classroom?.id || '',
     classroomName: classroom?.name || 'Non assigné',
     paymentType: paymentData.paymentType,
     amount: paymentData.amount,
@@ -2027,7 +2027,7 @@ export async function recordPayment(paymentData: PaymentFormData, userId: string
     description: paymentData.description,
     date: new Date().toISOString(),
     recordedBy: userId,
-    createdAt: new Date().toISOString()
+    created_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -2053,13 +2053,13 @@ export async function getStudentPayments(studentId: string): Promise<Payment[]> 
   });
 }
 
-export async function getClassroomPayments(classroomId: string): Promise<Payment[]> {
+export async function getClassroomPayments(classroom_id: string): Promise<Payment[]> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('payments', 'readonly');
     const store = tx.objectStore('payments');
-    const index = store.index('classroomId');
-    const request = index.getAll(classroomId);
+    const index = store.index('classroom_id');
+    const request = index.getAll(classroom_id);
 
     request.onsuccess = () => resolve(request.result || []);
     request.onerror = () => reject(request.error);
@@ -2079,7 +2079,7 @@ export async function getAllPayments(): Promise<Payment[]> {
 }
 
 // Fonction pour calculer les impayés
-export async function getUnpaidStudents(classroomId?: string): Promise<Array<{
+export async function getUnpaidStudents(classroom_id?: string): Promise<Array<{
   student: Student;
   classroom: Classroom | null;
   totalPaid: number;
@@ -2089,8 +2089,8 @@ export async function getUnpaidStudents(classroomId?: string): Promise<Array<{
   const db = await initDB();
   
   // Récupérer tous les élèves (ou d'une classe spécifique)
-  const students = classroomId 
-    ? await getStudentsInClassroom(classroomId) 
+  const students = classroom_id 
+    ? await getStudentsInClassroom(classroom_id) 
     : await getAllStudents();
 
   const result = await Promise.all(students.map(async student => {
@@ -2158,7 +2158,7 @@ export async function searchStudents(term: string): Promise<Student[]> {
       const results = allStudents.filter(student => 
         student.matricule.toLowerCase().includes(term.toLowerCase()) ||
         student.nom.toLowerCase().includes(term.toLowerCase()) ||
-        student.postNom.toLowerCase().includes(term.toLowerCase()) ||
+        student.post_nom.toLowerCase().includes(term.toLowerCase()) ||
         student.prenom.toLowerCase().includes(term.toLowerCase())
       );
       resolve(results);
@@ -2187,8 +2187,8 @@ export interface Communication {
   recipientName?: string;
   parentMessageId?: string;
   isRead: boolean;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CommunicationFormData {
@@ -2221,8 +2221,8 @@ export async function createCommunication(
     recipientName: formData.recipientId ? recipientName : undefined,
     parentMessageId,
     isRead: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
 
   return new Promise((resolve, reject) => {
@@ -2301,7 +2301,7 @@ export async function getCommunicationsForUser(
           index === self.findIndex(c => c.id === comm.id)
         );
         resolve(uniqueComms.sort((a, b) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         ));
       }).catch(reject);
     }
@@ -2319,7 +2319,7 @@ export async function markAsRead(communicationId: string): Promise<void> {
       const comm = request.result;
       if (comm) {
         comm.isRead = true;
-        comm.updatedAt = new Date().toISOString();
+        comm.updated_at = new Date().toISOString();
         const updateRequest = store.put(comm);
         updateRequest.onsuccess = () => resolve();
         updateRequest.onerror = () => reject(updateRequest.error);
@@ -2341,8 +2341,8 @@ export interface BulkEmail {
   content: string;
   recipientType: 'PARENTS' | 'TEACHERS' | 'SPECIFIC';
   specificRecipients?: string[]; // IDs des utilisateurs spécifiques
-  createdAt: string;
-  updatedAt?: string;
+  created_at: string;
+  updated_at?: string;
 }
 
 // Ajoutez ces fonctions à db.ts
@@ -2392,18 +2392,18 @@ export async function getBulkEmails(): Promise<BulkEmail[]> {
 
 // Ajoutez ces fonctions à db.ts
 
-export async function getParentsByClassroom(classroomId: string): Promise<User[]> {
+export async function getParentsByClassroom(classroom_id: string): Promise<User[]> {
   const db = await initDB();
   return new Promise(async (resolve, reject) => {
     try {
       // 1. Get all students in the classroom
-      const students = await getStudentsInClassroom(classroomId);
+      const students = await getStudentsInClassroom(classroom_id);
       
       // 2. Get all parents of these students
       const parents = await Promise.all(
         students.map(async student => {
-          if (student.tuteurId) {
-            return await getUserById(student.tuteurId);
+          if (student.tuteur_id) {
+            return await getUserById(student.tuteur_id);
           }
           return null;
         })
@@ -2446,21 +2446,21 @@ export async function getClassroomsWithParents(): Promise<Array<{
 export interface Absence {
   id: string;
   studentId: string;
-  classroomId: string;
+  classroom_id: string;
   date: string;
   reason?: string;
   justified: boolean;
   recordedBy: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface AbsenceRecord {
   id: string;
   date: string;
-  classroomId: string;
+  classroom_id: string;
   recordedBy: string;
   absences: string[]; // IDs des étudiants absents
-  createdAt: string;
+  created_at: string;
 }
 
 
@@ -2469,7 +2469,7 @@ export interface AbsenceRecord {
 
 // Ajoutez ces fonctions dans db.ts
 export async function recordAbsences(
-  classroomId: string,
+  classroom_id: string,
   absentStudentIds: string[],
   date: string = new Date().toISOString().split('T')[0],
   recordedBy: string
@@ -2479,10 +2479,10 @@ export async function recordAbsences(
   const record: AbsenceRecord = {
     id: uuidv4(),
     date,
-    classroomId,
+    classroom_id,
     recordedBy,
     absences: absentStudentIds,
-    createdAt: new Date().toISOString()
+    created_at: new Date().toISOString()
   };
 
   // Enregistrer la session
@@ -2500,11 +2500,11 @@ export async function recordAbsences(
     const absence: Absence = {
       id: uuidv4(),
       studentId,
-      classroomId,
+      classroom_id,
       date,
       justified: false,
       recordedBy,
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     };
     
     await new Promise<void>((resolve, reject) => {
@@ -2552,7 +2552,7 @@ export async function getAbsencesForStudent(
 }
 
 export async function getClassroomAbsences(
-  classroomId: string,
+  classroom_id: string,
   date?: string
 ): Promise<Absence[]> {
   const db = await initDB();
@@ -2562,8 +2562,8 @@ export async function getClassroomAbsences(
     const store = tx.objectStore('absences');
     const index = store.index('by_classroom');
     const request = date 
-      ? index.getAll(IDBKeyRange.only([classroomId, date]))
-      : index.getAll(classroomId);
+      ? index.getAll(IDBKeyRange.only([classroom_id, date]))
+      : index.getAll(classroom_id);
 
     request.onsuccess = () => resolve(request.result || []);
     request.onerror = () => reject(request.error);
@@ -2609,7 +2609,7 @@ export async function justifyAbsence(
 
 
 // Ajoutez ces fonctions dans db.ts
-export async function getAbsenceStatistics(classroomId?: string): Promise<{
+export async function getAbsenceStatistics(classroom_id?: string): Promise<{
     daily: { date: string; count: number }[];
     monthly: { month: string; count: number }[];
     byStudent: { studentId: string; name: string; count: number }[];
@@ -2620,8 +2620,8 @@ export async function getAbsenceStatistics(classroomId?: string): Promise<{
     let absences: Absence[] = await new Promise((resolve, reject) => {
         const tx = db.transaction('absences', 'readonly');
         const store = tx.objectStore('absences');
-        const request = classroomId 
-            ? store.index('by_classroom').getAll(classroomId)
+        const request = classroom_id 
+            ? store.index('by_classroom').getAll(classroom_id)
             : store.getAll();
         
         request.onsuccess = () => resolve(request.result || []);
@@ -2669,12 +2669,12 @@ export async function getAbsenceStatistics(classroomId?: string): Promise<{
 // Types pour la synchronisation
 interface SyncStudent extends StudentFormData {
   id: string;
-  createdAt?: string;
+  created_at?: string;
 }
 
 interface SyncClassroom extends ClassroomFormData {
   id: string;
-  createdAt?: string;
+  created_at?: string;
 }
 
 

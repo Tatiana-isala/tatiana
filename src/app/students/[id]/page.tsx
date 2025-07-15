@@ -1,221 +1,3 @@
-// 'use client'
-// import { useEffect, useState } from 'react';
-// import { useRouter, useParams } from 'next/navigation';
-// import { getStudentById } from '@/lib/db';
-// import { Student,User ,getParents} from '@/lib/db';
-// import { FaUser, FaEdit, FaPrint, FaArrowLeft } from 'react-icons/fa';
-// import TutorSelectionModal from '@/components/TutorSelectionModal';
-// import { assignTutor } from '@/lib/db';
-
-
-
-// export default function StudentDetails() {
-//   const router = useRouter();
-//   const { id } = useParams();
-//   const [student, setStudent] = useState<Student | null>(null);
-//   const [loading, setLoading] = useState(true);
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [selectedTutor, setSelectedTutor] = useState<User | null>(null);
-  
-  
-//   const handleAssignTutor = async (tutorId: string) => {
-//   try {
-//     // Vérification que student existe
-//     if (!student) {
-//       throw new Error("Aucun étudiant sélectionné");
-//     }
-
-//     // Correction des noms de variables (tutorId au lieu de tutorid)
-//     await assignTutor(student.id, tutorId);
-
-//     // Mise à jour de l'affichage - version corrigée
-//     setStudent(prev => {
-//       if (!prev) return null;
-//       return {
-//         ...prev,
-//         tuteurId: tutorId,
-//         updatedAt: new Date().toISOString() // Correction du nom updatedAt (pas updateAkt)
-//       };
-//     });
-
-//     setIsModalOpen(false);
-
-//     // Trouver le tuteur dans la liste des parents
-//     const parents = await getParents();
-//     const tutor = parents.find(p => p.id === tutorId);
-//     setSelectedTutor(tutor || null);
-
-//   } catch (error) {
-//     console.error('Error assigning tutor:', error);
-//     alert("Erreur lors de l'assignation du tuteur");
-//   }
-// };
-//   useEffect(() => {
-//     const fetchStudent = async () => {
-//       try {
-//         if (typeof id === 'string') {
-//           const data = await getStudentById(id);
-//           setStudent(data);
-//         }
-//       } catch (error) {
-//         console.error('Error fetching student:', error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchStudent();
-//   }, [id]);
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <div className="text-center">
-//           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-//           <p className="mt-4 text-gray-600">Chargement des informations de l'étudiant...</p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   if (!student) {
-//     return (
-//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-//         <div className="text-center">
-//           <p className="text-gray-600">Étudiant non trouvé</p>
-//           <button 
-//             onClick={() => router.push('/students')}
-//             className="mt-4 text-blue-600 hover:text-blue-800"
-//           >
-//             Retour à la liste
-//           </button>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 py-8 px-4">
-//       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-//         <div className="bg-blue-600 text-white p-6">
-//           <div className="flex items-center justify-between">
-//             <button 
-//               onClick={() => router.back()} 
-//               className="flex items-center text-white hover:text-blue-200"
-//             >
-//               <FaArrowLeft className="mr-2" /> Retour
-//             </button>
-//             <h1 className="text-2xl font-bold">Fiche de l'étudiant</h1>
-//             <div className="flex gap-2">
-//               <button className="p-2 bg-blue-500 rounded-md hover:bg-blue-700">
-//                 <FaEdit />
-//               </button>
-//               <button className="p-2 bg-blue-500 rounded-md hover:bg-blue-700">
-//                 <FaPrint />
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-
-//         <div className="p-6">
-//           <div className="flex flex-col md:flex-row gap-8 mb-8">
-//             <div className="flex flex-col items-center">
-//               <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-//                 {student.photoUrl ? (
-//                   <img 
-//                     src={student.photoUrl} 
-//                     alt={`${student.nom} ${student.prenom}`} 
-//                     className="w-full h-full rounded-full object-cover"
-//                   />
-//                 ) : (
-//                   <FaUser className="text-5xl text-gray-400" />
-//                 )}
-//               </div>
-//               <h2 className="text-xl font-semibold">{student.nom} {student.prenom}</h2>
-//               <p className="text-sm text-gray-500">Matricule: {student.matricule}</p>
-//             </div>
-
-//             <div className="flex-1">
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <h3 className="text-sm font-medium text-gray-500">Nom complet</h3>
-//                   <p className="text-lg">{student.nom} {student.postNom} {student.prenom}</p>
-//                 </div>
-//                 <div>
-//                   <h3 className="text-sm font-medium text-gray-500">Sexe</h3>
-//                   <p className="text-lg">{student.sexe === 'M' ? 'Masculin' : 'Féminin'}</p>
-//                 </div>
-//                 <div>
-//                   <h3 className="text-sm font-medium text-gray-500">Date de naissance</h3>
-//                   <p className="text-lg">{new Date(student.dateNaissance).toLocaleDateString()}</p>
-//                 </div>
-//                 <div>
-//                   <h3 className="text-sm font-medium text-gray-500">Lieu de naissance</h3>
-//                   <p className="text-lg">{student.lieuNaissance}</p>
-//                 </div>
-//                 <div>
-//                   <h3 className="text-sm font-medium text-gray-500">Nationalité</h3>
-//                   <p className="text-lg">{student.nationalite}</p>
-//                 </div>
-//                 <div>
-//                   <h3 className="text-sm font-medium text-gray-500">Adresse</h3>
-//                   <p className="text-lg">{student.adresse}</p>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="border-t border-gray-200 pt-6">
-//             <h2 className="text-lg font-medium text-gray-900 mb-4">Informations scolaires</h2>
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//               <div>
-//                 <h3 className="text-sm font-medium text-gray-500">Niveau d'étude</h3>
-//                 <p className="text-lg">{student.niveauEtude}</p>
-//               </div>
-//               <div>
-//                 <h3 className="text-sm font-medium text-gray-500">Option choisie</h3>
-//                 <p className="text-lg">{student.optionChoisie}</p>
-//               </div>
-//               <div>
-//                 <h3 className="text-sm font-medium text-gray-500">Établissement précédent</h3>
-//                 <p className="text-lg">{student.etablissementPrecedent || 'Non renseigné'}</p>
-//               </div>
-//               <div>
-//                 <h3 className="text-sm font-medium text-gray-500">Date d'inscription</h3>
-//                 <p className="text-lg">{new Date(student.createdAt).toLocaleDateString()}</p>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="border-t border-gray-200 pt-6">
-//             <h2 className="text-lg font-medium text-gray-900 mb-4">Contacts</h2>
-//             <div className="space-y-2">
-//               {student.contacts.map((contact, index) => (
-//                 <div key={index} className="flex items-center gap-2">
-//                   <span className="text-lg">{contact}</span>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-
-//           <div className="border-t border-gray-200 pt-6">
-//             <h2 className="text-lg font-medium text-gray-900 mb-4">Tuteur</h2>
-//             <div className="bg-gray-100 p-4 rounded-md">
-//               {student.tuteurId ? (
-//                 <p className="text-gray-700">Tuteur assigné (ID: {student.tuteurId})</p>
-//               ) : (
-//                 <p className="text-gray-700">Aucun tuteur assigné</p>
-//               )}
-//               <button className="mt-2 text-blue-600 hover:text-blue-800">
-//                 {student.tuteurId ? 'Changer de tuteur' : 'Assigner un tuteur'}
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 
 'use client'
@@ -247,9 +29,9 @@ export default function StudentDetails() {
           const data = await getStudentById(id)
           setStudent(data)
           
-          if (data?.tuteurId) {
+          if (data?.tuteur_id) {
             const parents = await getParents()
-            const tutor = parents.find(p => p.id === data.tuteurId)
+            const tutor = parents.find(p => p.id === data.tuteur_id)
             setSelectedTutor(tutor || null)
           }
         }
@@ -275,7 +57,7 @@ export default function StudentDetails() {
       
       setStudent(prev => ({
         ...prev!,
-        tuteurId: tutorId,
+        tuteur_id: tutorId,
         updatedAt: new Date().toISOString()
       }))
       
@@ -369,7 +151,7 @@ export default function StudentDetails() {
                     <div>
                       <p className="text-sm text-gray-500">Nom complet</p>
                       <p className="font-medium">
-                        {student.nom} {student.postNom} {student.prenom}
+                        {student.nom} {student.post_nom} {student.prenom}
                       </p>
                     </div>
                   </div>
@@ -381,7 +163,7 @@ export default function StudentDetails() {
                     <div>
                       <p className="text-sm text-gray-500">Date de naissance</p>
                       <p className="font-medium">
-                        {new Date(student.dateNaissance).toLocaleDateString()}
+                        {new Date(student.date_naissance).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -392,7 +174,7 @@ export default function StudentDetails() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Lieu de naissance</p>
-                      <p className="font-medium">{student.lieuNaissance}</p>
+                      <p className="font-medium">{student.lieu_naissance}</p>
                     </div>
                   </div>
                   
@@ -444,7 +226,7 @@ export default function StudentDetails() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Niveau d'étude</p>
-                      <p className="font-medium">{student.niveauEtude}</p>
+                      <p className="font-medium">{student.niveau_etude}</p>
                     </div>
                   </div>
                   
@@ -454,7 +236,7 @@ export default function StudentDetails() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Option choisie</p>
-                      <p className="font-medium">{student.optionChoisie}</p>
+                      <p className="font-medium">{student.option_choisie}</p>
                     </div>
                   </div>
                   
@@ -465,7 +247,7 @@ export default function StudentDetails() {
                     <div>
                       <p className="text-sm text-gray-500">Établissement précédent</p>
                       <p className="font-medium">
-                        {student.etablissementPrecedent || 'Non renseigné'}
+                        {student.etablissement_precedent || 'Non renseigné'}
                       </p>
                     </div>
                   </div>
@@ -477,7 +259,7 @@ export default function StudentDetails() {
                     <div>
                       <p className="text-sm text-gray-500">Date d'inscription</p>
                       <p className="font-medium">
-                        {new Date(student.createdAt).toLocaleDateString()}
+                        {new Date(student.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -517,7 +299,7 @@ export default function StudentDetails() {
                     }`}
                   >
                     <FaUserPlus size={14} />
-                    {student.tuteurId ? 'Changer' : 'Assigner'}
+                    {student.tuteur_id ? 'Changer' : 'Assigner'}
                   </button>
                 </div>
                 

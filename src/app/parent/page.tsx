@@ -245,7 +245,7 @@
 //           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 //             {students.map(student => {
 //               const classroom = classrooms[student.id]
-//               const birthDate = new Date(student.dateNaissance)
+//               const birthDate = new Date(student.date_naissance)
 //               const age = new Date().getFullYear() - birthDate.getFullYear()
 //               const studentAverage = calculateStudentAverage(student.id)
 //               const isSuccess = studentAverage !== null && studentAverage >= 50
@@ -260,7 +260,7 @@
 //                       </div>
 //                       <div>
 //                         <h2 className="font-bold text-lg">
-//                           {student.prenom} {student.nom} {student.postNom}
+//                           {student.prenom} {student.nom} {student.post_nom}
 //                         </h2>
 //                         <p className="text-sm opacity-90">{student.matricule}</p>
 //                       </div>
@@ -306,10 +306,10 @@
 //                               <span className="font-medium">Section:</span> {classroom?.section || 'Non spécifié'}
 //                             </p>
 //                             <p className="text-sm">
-//                               <span className="font-medium">Niveau:</span> {student.niveauEtude}
+//                               <span className="font-medium">Niveau:</span> {student.niveau_etude}
 //                             </p>
 //                             <p className="text-sm">
-//                               <span className="font-medium">Option:</span> {student.optionChoisie}
+//                               <span className="font-medium">Option:</span> {student.option_choisie}
 //                             </p>
 //                           </div>
 //                         </div>
@@ -327,7 +327,7 @@
 //                               <span className="font-medium">Né(e) le:</span> {birthDate.toLocaleDateString()}
 //                             </p>
 //                             <p className="text-sm">
-//                               <span className="font-medium">Lieu de naissance:</span> {student.lieuNaissance}
+//                               <span className="font-medium">Lieu de naissance:</span> {student.lieu_naissance}
 //                             </p>
 //                             <p className="text-sm">
 //                               <span className="font-medium">Sexe:</span> {student.sexe === 'M' ? 'Masculin' : 'Féminin'}
@@ -745,7 +745,7 @@ export default function ParentPage() {
         // Filter announcements
         const announcementsData = comms
           .filter(c => c.type === 'ANNOUNCEMENT')
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         
         setAnnouncements(announcementsData)
         setUnreadAnnouncements(announcementsData.filter(a => !a.isRead).length)
@@ -970,7 +970,7 @@ export default function ParentPage() {
                         )}
                       </h3>
                       <span className="text-sm text-gray-500 whitespace-nowrap">
-                        {new Date(announcement.createdAt).toLocaleDateString('fr-FR', {
+                        {new Date(announcement.created_at).toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
@@ -997,7 +997,7 @@ export default function ParentPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {students.map(student => {
               const classroom = classrooms[student.id]
-              const birthDate = new Date(student.dateNaissance)
+              const birthDate = new Date(student.date_naissance)
               const age = new Date().getFullYear() - birthDate.getFullYear()
               const studentAverage = calculateStudentAverage(student.id)
               const isSuccess = studentAverage !== null && studentAverage >= 50
@@ -1012,7 +1012,7 @@ export default function ParentPage() {
                       </div>
                       <div>
                         <h2 className="font-bold text-lg">
-                          {student.prenom} {student.nom} {student.postNom}
+                          {student.prenom} {student.nom} {student.post_nom}
                         </h2>
                         <p className="text-sm opacity-90">{student.matricule}</p>
                       </div>
@@ -1058,10 +1058,10 @@ export default function ParentPage() {
                               <span className="font-medium">Section:</span> {classroom?.section || 'Non spécifié'}
                             </p>
                             <p className="text-sm">
-                              <span className="font-medium">Niveau:</span> {student.niveauEtude}
+                              <span className="font-medium">Niveau:</span> {student.niveau_etude}
                             </p>
                             <p className="text-sm">
-                              <span className="font-medium">Option:</span> {student.optionChoisie}
+                              <span className="font-medium">Option:</span> {student.option_choisie}
                             </p>
                           </div>
                         </div>
@@ -1079,7 +1079,7 @@ export default function ParentPage() {
                               <span className="font-medium">Né(e) le:</span> {birthDate.toLocaleDateString()}
                             </p>
                             <p className="text-sm">
-                              <span className="font-medium">Lieu de naissance:</span> {student.lieuNaissance}
+                              <span className="font-medium">Lieu de naissance:</span> {student.lieu_naissance}
                             </p>
                             <p className="text-sm">
                               <span className="font-medium">Sexe:</span> {student.sexe === 'M' ? 'Masculin' : 'Féminin'}

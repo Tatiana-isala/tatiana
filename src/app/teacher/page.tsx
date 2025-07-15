@@ -272,22 +272,36 @@ export default function TeacherListPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      try {
-        setLoading(true)
-        const data = await getEnseignantsWithDetails()
-        setTeachers(data)
-      } catch (error) {
-        console.error('Erreur lors du chargement des enseignants:', error)
-      } finally {
-        setLoading(false)
-      }
+  // useEffect(() => {
+  //   const fetchTeachers = async () => {
+  //     try {
+  //       setLoading(true)
+  //       const data = await getEnseignantsWithDetails()
+  //       setTeachers(data)
+  //     } catch (error) {
+  //       console.error('Erreur lors du chargement des enseignants:', error)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   fetchTeachers()
+  // }, [])
+useEffect(() => {
+  const fetchTeachers = async () => {
+    try {
+      setLoading(true);
+      const data = await getEnseignantsWithDetails();
+      setTeachers(data as (User & { teacherInfo?: TeacherInfo })[]);
+    } catch (error) {
+      console.error('Erreur lors du chargement des enseignants:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    fetchTeachers()
-  }, [])
-
+  fetchTeachers();
+}, []);
   const filteredTeachers = teachers.filter(teacher => 
     teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     teacher.phone.includes(searchTerm) ||

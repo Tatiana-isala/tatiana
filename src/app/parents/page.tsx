@@ -143,7 +143,7 @@ export default function ParentsListPage() {
                           >
                             <div className="flex justify-between">
                               <h5 className="font-medium text-gray-900">
-                                {child.prenom} {child.nom} {child.postNom}
+                                {child.prenom} {child.nom} {child.post_nom}
                               </h5>
                               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                                 {child.matricule}
@@ -156,11 +156,11 @@ export default function ParentsListPage() {
                               </div>
                               <div className="flex items-center">
                                 <span className="mr-2 text-gray-400">Niveau:</span>
-                                <span>{child.niveauEtude}</span>
+                                <span>{child.niveau_etude}</span>
                               </div>
                               <div className="flex items-center">
                                 <span className="mr-2 text-gray-400">Option:</span>
-                                <span>{child.optionChoisie}</span>
+                                <span>{child.option_choisie}</span>
                               </div>
                             </div>
                           </div>

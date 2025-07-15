@@ -1,149 +1,3 @@
-// 'use client'
-// import { useState, useEffect } from 'react';
-// import { useAuth } from '@/context/AuthContext';
-// import { getClassroomById, getStudentsInClassroom, recordAbsences,Classroom,Student } from '@/lib/db';
-// import LoadingSpinner from '@/components/LoadingSpinner';
-// import { useRouter, useSearchParams } from 'next/navigation';
-// import DatePicker from 'react-datepicker';
-// import 'react-datepicker/dist/react-datepicker.css';
-
-// export default function RecordAbsencesPage() {
-//   const { user } = useAuth();
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-//   const classroomId = searchParams.get('classroomId');
-  
-//   const [classroom, setClassroom] = useState<Classroom | null>(null);
-//   const [students, setStudents] = useState<Student[]>([]);
-//   const [absentStudents, setAbsentStudents] = useState<string[]>([]);
-//   const [date, setDate] = useState<Date>(new Date());
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [message, setMessage] = useState('');
-
-//   useEffect(() => {
-//     if (!classroomId) {
-//       router.push('/absences');
-//       return;
-//     }
-
-//     const loadData = async () => {
-//       try {
-//         const [classroomData, studentsData] = await Promise.all([
-//           getClassroomById(classroomId),
-//           getStudentsInClassroom(classroomId)
-//         ]);
-        
-//         setClassroom(classroomData);
-//         setStudents(studentsData);
-//       } catch (error) {
-//         console.error('Error loading data:', error);
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-
-//     loadData();
-//   }, [classroomId, router]);
-
-//   const toggleStudentAbsence = (studentId: string) => {
-//     setAbsentStudents(prev => 
-//       prev.includes(studentId)
-//         ? prev.filter(id => id !== studentId)
-//         : [...prev, studentId]
-//     );
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!user?.id || !classroomId) return;
-
-//     setIsLoading(true);
-//     try {
-//       await recordAbsences(
-//         classroomId,
-//         absentStudents,
-//         date.toISOString().split('T')[0],
-//         user.id
-//       );
-      
-//       setMessage('Présence enregistrée avec succès');
-//       setAbsentStudents([]);
-//       setTimeout(() => setMessage(''), 3000);
-//     } catch (error) {
-//       console.error('Error recording absences:', error);
-//       setMessage("Erreur lors de l'enregistrement");
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   if (isLoading) {
-//     return <LoadingSpinner />;
-//   }
-
-//   if (!classroom) {
-//     return <div>Classe non trouvée</div>;
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <h1 className="text-2xl font-bold mb-6">Enregistrement des absences</h1>
-//       <h2 className="text-xl mb-4">Classe: {classroom.name}</h2>
-      
-//     // Modifiez cette partie dans votre fichier
-// <div className="mb-6">
-//   <label className="block mb-2 font-medium">Date:</label>
-//   <DatePicker
-//     selected={date}
-//     onChange={(date: Date | null) => {
-//       if (date) {
-//         setDate(date);
-//       }
-//     }}
-//     className="p-2 border rounded"
-//     dateFormat="dd/MM/yyyy"
-//     placeholderText="Sélectionner une date"
-//   />
-// </div>
-      
-//       {message && (
-//         <div className={`mb-4 p-3 rounded ${
-//           message.includes('Erreur') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-//         }`}>
-//           {message}
-//         </div>
-//       )}
-      
-//       <div className="mb-6">
-//         <h3 className="font-medium mb-3">Liste des élèves:</h3>
-//         <div className="space-y-2">
-//           {students.map(student => (
-//             <div key={student.id} className="flex items-center p-3 border rounded">
-//               <input
-//                 type="checkbox"
-//                 id={`absent-${student.id}`}
-//                 checked={absentStudents.includes(student.id)}
-//                 onChange={() => toggleStudentAbsence(student.id)}
-//                 className="mr-3 h-5 w-5"
-//               />
-//               <label htmlFor={`absent-${student.id}`} className="flex-1">
-//                 {student.nom} {student.postNom} {student.prenom}
-//                 {student.matricule && ` (${student.matricule})`}
-//               </label>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-      
-//       <button
-//         onClick={handleSubmit}
-//         disabled={isLoading}
-//         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-300"
-//       >
-//         {isLoading ? 'Enregistrement...' : 'Enregistrer les absences'}
-//       </button>
-//     </div>
-//   );
-// }
 
 
 'use client'
@@ -161,18 +15,18 @@ export default function RecordAbsencesPage() {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const classroomId = searchParams.get('classroomId');
+  const classroom_id = searchParams.get('classroom_id');
   
   const [classroom, setClassroom] = useState<Classroom | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
-  const [absentStudents, setAbsentStudents] = useState<string[]>([]);
+  const [absent_students, setAbsent_students] = useState<string[]>([]);
   const [date, setDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
-    if (!classroomId) {
+    if (!classroom_id) {
       router.push('/absences');
       return;
     }
@@ -180,9 +34,9 @@ export default function RecordAbsencesPage() {
     const loadData = async () => {
       try {
         const [classroomData, studentsData, statsData] = await Promise.all([
-          getClassroomById(classroomId),
-          getStudentsInClassroom(classroomId),
-          getAbsenceStatistics(classroomId)
+          getClassroomById(classroom_id),
+          getStudentsInClassroom(classroom_id),
+          getAbsenceStatistics(classroom_id)
         ]);
         
         setClassroom(classroomData);
@@ -196,10 +50,10 @@ export default function RecordAbsencesPage() {
     };
 
     loadData();
-  }, [classroomId, router]);
+  }, [classroom_id, router]);
 
   const toggleStudentAbsence = (studentId: string) => {
-    setAbsentStudents(prev => 
+    setAbsent_students(prev => 
       prev.includes(studentId)
         ? prev.filter(id => id !== studentId)
         : [...prev, studentId]
@@ -207,21 +61,21 @@ export default function RecordAbsencesPage() {
   };
 
   const handleSubmit = async () => {
-    if (!user?.id || !classroomId) return;
+    if (!user?.id || !classroom_id) return;
 
     setIsLoading(true);
     try {
       await recordAbsences(
-        classroomId,
-        absentStudents,
+        classroom_id,
+        absent_students,
         date.toISOString().split('T')[0],
         user.id
       );
       
       setMessage('Présence enregistrée avec succès');
-      setAbsentStudents([]);
+      setAbsent_students([]);
       // Recharger les stats après enregistrement
-      const updatedStats = await getAbsenceStatistics(classroomId);
+      const updatedStats = await getAbsenceStatistics(classroom_id);
       setStats(updatedStats);
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
@@ -284,7 +138,7 @@ export default function RecordAbsencesPage() {
                   <div 
                     key={student.id} 
                     className={`flex items-center p-4 rounded-lg border transition-all ${
-                      absentStudents.includes(student.id)
+                      absent_students.includes(student.id)
                         ? 'border-red-200 bg-red-50'
                         : 'border-gray-200 hover:bg-gray-50'
                     }`}
@@ -292,7 +146,7 @@ export default function RecordAbsencesPage() {
                     <input
                       type="checkbox"
                       id={`absent-${student.id}`}
-                      checked={absentStudents.includes(student.id)}
+                      checked={absent_students.includes(student.id)}
                       onChange={() => toggleStudentAbsence(student.id)}
                       className="mr-3 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
@@ -305,11 +159,11 @@ export default function RecordAbsencesPage() {
                       )}
                     </label>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      absentStudents.includes(student.id)
+                      absent_students.includes(student.id)
                         ? 'bg-red-100 text-red-800'
                         : 'bg-green-100 text-green-800'
                     }`}>
-                      {absentStudents.includes(student.id) ? 'Absent' : 'Présent'}
+                      {absent_students.includes(student.id) ? 'Absent' : 'Présent'}
                     </span>
                   </div>
                 ))}

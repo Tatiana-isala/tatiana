@@ -11,17 +11,17 @@ export default function StudentRegistration() {
   const router = useRouter();
   const [formData, setFormData] = useState<StudentFormData>({
     nom: '',
-    postNom: '',
+    post_nom: '',
     prenom: '',
-    dateNaissance: '',
-    lieuNaissance: '',
+    date_naissance: '',
+    lieu_naissance: '',
     sexe: 'M',
     nationalite: '',
     adresse: '',
     contacts: [''],
-    niveauEtude: '',
-    etablissementPrecedent: '',
-    optionChoisie: ''
+    niveau_etude: '',
+    etablissement_precedent: '',
+    option_choisie: ''
   });
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [selectedClassroom, setSelectedClassroom] = useState<string>('');
@@ -165,8 +165,8 @@ export default function StudentRegistration() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Post-nom *</label>
                 <input
                   type="text"
-                  name="postNom"
-                  value={formData.postNom}
+                  name="post_nom"
+                  value={formData.post_nom}
                   onChange={handleChange}
                   required
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -200,8 +200,8 @@ export default function StudentRegistration() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance *</label>
                 <input
                   type="date"
-                  name="dateNaissance"
-                  value={formData.dateNaissance}
+                  name="date_naissance"
+                  value={formData.date_naissance}
                   onChange={handleChange}
                   required
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -211,8 +211,8 @@ export default function StudentRegistration() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Lieu de naissance *</label>
                 <input
                   type="text"
-                  name="lieuNaissance"
-                  value={formData.lieuNaissance}
+                  name="lieu_naissance"
+                  value={formData.lieu_naissance}
                   onChange={handleChange}
                   required
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -298,8 +298,8 @@ export default function StudentRegistration() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Niveau d'étude *</label>
                 <input
                   type="text"
-                  name="niveauEtude"
-                  value={formData.niveauEtude}
+                  name="niveau_etude"
+                  value={formData.niveau_etude}
                   onChange={handleChange}
                   required
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -309,8 +309,8 @@ export default function StudentRegistration() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Établissement précédent</label>
                 <input
                   type="text"
-                  name="etablissementPrecedent"
-                  value={formData.etablissementPrecedent}
+                  name="etablissement_precedent"
+                  value={formData.etablissement_precedent}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -319,8 +319,8 @@ export default function StudentRegistration() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Option choisie *</label>
                 <input
                   type="text"
-                  name="optionChoisie"
-                  value={formData.optionChoisie}
+                  name="option_choisie"
+                  value={formData.option_choisie}
                   onChange={handleChange}
                   required
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"

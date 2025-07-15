@@ -436,7 +436,7 @@ export default function TeacherDashboard() {
                             {courses.find(c => c.id === item.courseId)?.name || 'Cours'}
                           </h3>
                           <p className="text-sm text-gray-500 mt-1">
-                            {classrooms.find(c => c.id === item.classroomId)?.name || 'Classe'}
+                            {classrooms.find(c => c.id === item.classroom_id)?.name || 'Classe'}
                           </p>
                         </div>
                         <div className="text-right">

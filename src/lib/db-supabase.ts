@@ -21,6 +21,20 @@ import {
   getAbsenceStatistics
 } from './db';
 
+
+
+// Ajoutez ces constantes en haut du fichier
+const REALTIME_CHANNEL_NAME = 'school_sync_channel';
+const REALTIME_EVENTS = {
+  USERS_UPDATED: 'USERS_UPDATED',
+  STUDENTS_UPDATED: 'STUDENTS_UPDATED',
+  COURSES_UPDATED: 'COURSES_UPDATED',
+  SCHEDULE_UPDATED: 'SCHEDULE_UPDATED',
+  FEES_UPDATED: 'FEES_UPDATED',
+  PAYMENTS_UPDATED: 'PAYMENTS_UPDATED'
+};
+
+
 // Configuration Supabase
 const SUPABASE_URL = 'https://whyxuyvjncluurhmrvhh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeXh1eXZqbmNsdXVyaG1ydmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyNzI3MDcsImV4cCI6MjA2Nzg0ODcwN30.-GopatABM3yyZAezW6KBUr3OEDTi5R5JpJsIyxn70_w';
@@ -37,8 +51,48 @@ interface SyncResult {
   error?: string;
 }
 
+
+
+// Ajoutez cette fonction pour configurer le realtime
+export function setupRealtimeSync(callback: (table: SyncTable) => void) {
+  const channel = supabase
+    .channel(REALTIME_CHANNEL_NAME)
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public' },
+      (payload) => {
+        console.log('Realtime change received:', payload);
+        switch (payload.table) {
+          case 'users':
+            callback('users');
+            break;
+          case 'students':
+            callback('students');
+            break;
+          case 'courses':
+            callback('courses');
+            break;
+          case 'schedule':
+            callback('schedule');
+            break;
+          case 'fee_structures':
+            callback('fees');
+            break;
+          case 'payments':
+            callback('payments');
+            break;
+        }
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}
+
 // Fonction principale de synchronisation
-export async function syncWithSupabase(operation: SyncOperation): Promise<SyncResult[]> {
+export async function syncWithSupabase(operation: SyncOperation,tables?: SyncTable[]): Promise<SyncResult[]> {
   const results: SyncResult[] = [];
   
   try {
@@ -47,7 +101,6 @@ export async function syncWithSupabase(operation: SyncOperation): Promise<SyncRe
       results.push(
         await syncUsers('download'),
         await syncStudents('download'),
-        await syncClassrooms('download'),
         await syncCourses('download'),
         await syncSchedule('download'),
         await syncFees('download'),
@@ -58,7 +111,6 @@ export async function syncWithSupabase(operation: SyncOperation): Promise<SyncRe
       results.push(
         await syncUsers('upload'),
         await syncStudents('upload'),
-        await syncClassrooms('upload'),
         await syncCourses('upload'),
         await syncSchedule('upload'),
         await syncFees('upload'),
@@ -73,41 +125,92 @@ export async function syncWithSupabase(operation: SyncOperation): Promise<SyncRe
   return results;
 }
 
-// Synchronisation des utilisateurs
+
+
+
 // async function syncUsers(operation: SyncOperation): Promise<SyncResult> {
 //   const result: SyncResult = { table: 'users', success: false };
   
 //   try {
 //     if (operation === 'download') {
+//       console.log('Starting users download from Supabase...');
 //       const { data, error } = await supabase
 //         .from('users')
 //         .select('*');
       
-//       if (error) throw error;
+//       if (error) {
+//         console.error('Supabase users query error:', error);
+//         throw error;
+//       }
+
+//       console.log(`Received ${data?.length || 0} users from Supabase`);
       
-//       // Mettre à jour IndexedDB
+//       if (!data || data.length === 0) {
+//         result.count = 0;
+//         result.success = true;
+//         return result;
+//       }
+
+//       // Process each user
+//       let processedCount = 0;
 //       for (const user of data) {
-//         const existing = await getUserById(user.id);
-//         if (!existing) {
-//           await createUser(user);
-//         } else {
-//           await updateUserOnlineStatus(user.id, user.is_online);
+//         try {
+//           // Validate required fields
+//           if (!user.id || !user.name || !user.role || !user.password || !user.phone) {
+//             console.warn('Skipping invalid user:', user);
+//             continue;
+//           }
+
+//           const existing = await getUserById(user.id);
+//           if (!existing) {
+//             await createUser({
+//               email: user.email,
+//               name: user.name,
+//               role: user.role,
+//               password: user.password,
+//               phone: user.phone
+//             });
+//           } else {
+//             await updateUserOnlineStatus(user.id, user.is_online || false);
+//           }
+//           processedCount++;
+//         } catch (userError) {
+//           console.error(`Error processing user ${user.id}:`, userError);
 //         }
 //       }
       
-//       result.count = data.length;
+//       result.count = processedCount;
 //     } else {
+//       console.log('Starting users upload to Supabase...');
 //       const users = await getAllUsers();
+//       console.log(`Found ${users.length} local users to sync`);
       
-//       // Upload vers Supabase par batch
-//       const batchSize = 50;
-//       for (let i = 0; i < users.length; i += batchSize) {
-//         const batch = users.slice(i, i + batchSize);
-//         const { error } = await supabase
-//           .from('users')
-//           .upsert(batch);
-        
-//         if (error) throw error;
+//       if (users.length === 0) {
+//         result.count = 0;
+//         result.success = true;
+//         return result;
+//       }
+
+//       // Prepare batch
+//       const batch = users.map(user => ({
+//         id: user.id,
+//         email: user.email,
+//         name: user.name,
+//         role: user.role,
+//         password: user.password,
+//         phone: user.phone,
+//         is_online: user.is_online,
+//         last_sign_in_at: user.last_sign_in_at,
+//         created_at: user.created_at
+//       }));
+
+//       const { error } = await supabase
+//         .from('users')
+//         .upsert(batch);
+      
+//       if (error) {
+//         console.error('Supabase users upsert error:', error);
+//         throw error;
 //       }
       
 //       result.count = users.length;
@@ -115,12 +218,12 @@ export async function syncWithSupabase(operation: SyncOperation): Promise<SyncRe
     
 //     result.success = true;
 //   } catch (error) {
-//     result.error = error instanceof Error ? error.message : 'Unknown error';
+//     console.error('Full users sync error:', error);
+//     result.error = error instanceof Error ? error.message : JSON.stringify(error);
 //   }
   
 //   return result;
 // }
-
 
 
 async function syncUsers(operation: SyncOperation): Promise<SyncResult> {
@@ -165,10 +268,10 @@ async function syncUsers(operation: SyncOperation): Promise<SyncResult> {
               password: user.password,
               phone: user.phone
             });
+            processedCount++;
           } else {
             await updateUserOnlineStatus(user.id, user.is_online || false);
           }
-          processedCount++;
         } catch (userError) {
           console.error(`Error processing user ${user.id}:`, userError);
         }
@@ -186,126 +289,49 @@ async function syncUsers(operation: SyncOperation): Promise<SyncResult> {
         return result;
       }
 
-      // Prepare batch
-      const batch = users.map(user => ({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        password: user.password,
-        phone: user.phone,
-        is_online: user.is_online,
-        last_sign_in_at: user.last_sign_in_at,
-        created_at: user.createdAt
-      }));
-
-      const { error } = await supabase
-        .from('users')
-        .upsert(batch);
+      // Nouvelle approche avec gestion des conflits
+      let successCount = 0;
+      const BATCH_SIZE = 50;
       
-      if (error) {
-        console.error('Supabase users upsert error:', error);
-        throw error;
+      for (let i = 0; i < users.length; i += BATCH_SIZE) {
+        const batch = users.slice(i, i + BATCH_SIZE);
+        
+        try {
+          const { error } = await supabase
+            .from('users')
+            .upsert(batch, {
+              onConflict: 'phone', // Ignorer les conflits sur le phone
+              ignoreDuplicates: true // Ne pas mettre à jour les existants
+            });
+          
+          if (error) {
+            console.warn('Batch partial error (duplicates ignored):', error.message);
+            // Compter seulement les succès
+            successCount += batch.filter(u => !error.message.includes(u.phone)).length;
+          } else {
+            successCount += batch.length;
+          }
+        } catch (batchError) {
+          console.warn('Skipping failed batch:', batchError);
+        }
       }
       
-      result.count = users.length;
+      result.count = successCount;
     }
     
     result.success = true;
   } catch (error) {
     console.error('Full users sync error:', error);
-    result.error = error instanceof Error ? error.message : JSON.stringify(error);
+    result.error = error instanceof Error ? error.message : 'Unknown error';
+    // Marquer quand même comme succès partiel
+    result.success = result.count ? true : false;
   }
   
   return result;
 }
 
-// Synchronisation des étudiants
-// async function syncStudents(operation: SyncOperation): Promise<SyncResult> {
-//   const result: SyncResult = { table: 'students', success: false };
-  
-//   try {
-//     if (operation === 'download') {
-//       const { data, error } = await supabase
-//         .from('students')
-//         .select('*');
-      
-//       if (error) throw error;
-      
-//       for (const student of data) {
-//         const existing = await getStudentById(student.id);
-//         if (!existing) {
-//           await createStudent(student);
-//         }
-//       }
-      
-//       result.count = data.length;
-//     } else {
-//       const students = await getAllStudents();
-      
-//       const batchSize = 50;
-//       for (let i = 0; i < students.length; i += batchSize) {
-//         const batch = students.slice(i, i + batchSize);
-//         const { error } = await supabase
-//           .from('students')
-//           .upsert(batch);
-        
-//         if (error) throw error;
-//       }
-      
-//       result.count = students.length;
-//     }
-    
-//     result.success = true;
-//   } catch (error) {
-//     result.error = error instanceof Error ? error.message : 'Unknown error';
-//   }
-  
-//   return result;
-// }
 
-
-
-// Synchronisation des classes
-// async function syncClassrooms(operation: SyncOperation): Promise<SyncResult> {
-//   const result: SyncResult = { table: 'classrooms', success: false };
-  
-//   try {
-//     if (operation === 'download') {
-//       const { data, error } = await supabase
-//         .from('classrooms')
-//         .select('*');
-      
-//       if (error) throw error;
-      
-//       for (const classroom of data) {
-//         const existing = await getClassroomById(classroom.id);
-//         if (!existing) {
-//           await createClassroom(classroom);
-//         }
-//       }
-      
-//       result.count = data.length;
-//     } else {
-//       const classrooms = await getAllClassrooms();
-      
-//       const { error } = await supabase
-//         .from('classrooms')
-//         .upsert(classrooms);
-      
-//       if (error) throw error;
-      
-//       result.count = classrooms.length;
-//     }
-    
-//     result.success = true;
-//   } catch (error) {
-//     result.error = error instanceof Error ? error.message : 'Unknown error';
-//   }
-  
-//   return result;
-// }
-
+// Modifiez la fonction syncStudents pour inclure les nouvelles colonnes
 async function syncStudents(operation: SyncOperation): Promise<SyncResult> {
   const result: SyncResult = { table: 'students', success: false };
   
@@ -332,26 +358,29 @@ async function syncStudents(operation: SyncOperation): Promise<SyncResult> {
       let processedCount = 0;
       for (const student of data) {
         try {
-          // Validate required fields and ensure createdAt exists
-          if (!student.id || !student.nom || !student.prenom) {
+          // Validation des champs obligatoires y compris matricule
+          if (!student.id || !student.nom || !student.prenom || !student.matricule) {
             console.warn('Skipping invalid student:', student);
             continue;
           }
 
           const studentData = {
+            matricule: student.matricule,
             nom: student.nom,
-            postNom: student.postNom || '',
+            post_nom: student.post_nom || '',
             prenom: student.prenom,
-            dateNaissance: student.dateNaissance || '',
-            lieuNaissance: student.lieuNaissance || '',
+            date_naissance: student.date_naissance || '',
+            lieu_naissance: student.lieu_naissance || '',
             sexe: student.sexe || 'M',
             nationalite: student.nationalite || '',
             adresse: student.adresse || '',
             contacts: student.contacts || [],
-            niveauEtude: student.niveauEtude || '',
-            etablissementPrecedent: student.etablissementPrecedent || '',
-            optionChoisie: student.optionChoisie || '',
-            createdAt: student.createdAt || new Date().toISOString()
+            niveau_etude: student.niveau_etude || '',
+            etablissement_precedent: student.etablissement_precedent || '',
+            option_choisie: student.option_choisie || '',
+            tuteur_id: student.tuteur_id || null, // Ajout de tuteur_id
+            classroom_id: student.classroom_id || null, // Ajout de classroom_id
+            created_at: student.created_at || new Date().toISOString()
           };
 
           const existing = await getStudentById(student.id);
@@ -376,23 +405,26 @@ async function syncStudents(operation: SyncOperation): Promise<SyncResult> {
         return result;
       }
 
-      // Prepare batch with proper createdAt field
+      // Préparation du batch avec toutes les colonnes
       const batch = students.map(student => ({
         id: student.id,
+        matricule: student.matricule,
         nom: student.nom,
-        postNom: student.postNom,
+        post_nom: student.post_nom,
         prenom: student.prenom,
-        dateNaissance: student.dateNaissance,
-        lieuNaissance: student.lieuNaissance,
+        date_naissance: student.date_naissance,
+        lieu_naissance: student.lieu_naissance,
         sexe: student.sexe,
         nationalite: student.nationalite,
         adresse: student.adresse,
         contacts: JSON.stringify(student.contacts || []),
-        niveauEtude: student.niveauEtude,
-        etablissementPrecedent: student.etablissementPrecedent,
-        optionChoisie: student.optionChoisie,
-        createdAt: student.createdAt || new Date().toISOString(),
-        updatedAt: student.updatedAt || new Date().toISOString()
+        niveau_etude: student.niveau_etude,
+        etablissement_precedent: student.etablissement_precedent,
+        option_choisie: student.option_choisie,
+        tuteur_id: student.tuteur_id || null, // Ajout de tuteur_id
+        classroom_id: student.classroom_id || null, // Ajout de classroom_id
+        created_at: student.created_at || new Date().toISOString(),
+        updated_at: student.updated_at || new Date().toISOString()
       }));
 
       const { error } = await supabase
@@ -415,104 +447,119 @@ async function syncStudents(operation: SyncOperation): Promise<SyncResult> {
   
   return result;
 }
-
-async function syncClassrooms(operation: SyncOperation): Promise<SyncResult> {
-  const result: SyncResult = { table: 'classrooms', success: false };
+// async function syncStudents(operation: SyncOperation): Promise<SyncResult> {
+//   const result: SyncResult = { table: 'students', success: false };
   
-  try {
-    if (operation === 'download') {
-      console.log('Downloading classrooms from Supabase...');
-      const { data, error } = await supabase
-        .from('classrooms')
-        .select('*');
+//   try {
+//     if (operation === 'download') {
+//       console.log('Downloading students from Supabase...');
+//       const { data, error } = await supabase
+//         .from('students')
+//         .select('*');
       
-      if (error) {
-        console.error('Supabase classrooms error:', error);
-        throw error;
-      }
+//       if (error) {
+//         console.error('Supabase students error:', error);
+//         throw error;
+//       }
 
-      console.log(`Received ${data?.length || 0} classrooms`);
+//       console.log(`Received ${data?.length || 0} students`);
       
-      if (!data || data.length === 0) {
-        result.count = 0;
-        result.success = true;
-        return result;
-      }
+//       if (!data || data.length === 0) {
+//         result.count = 0;
+//         result.success = true;
+//         return result;
+//       }
 
-      let processedCount = 0;
-      for (const classroom of data) {
-        try {
-          // Validate required fields and ensure createdAt exists
-          if (!classroom.id || !classroom.name || !classroom.section) {
-            console.warn('Skipping invalid classroom:', classroom);
-            continue;
-          }
+//       let processedCount = 0;
+//       for (const student of data) {
+//         try {
+//           // Validation des champs obligatoires y compris matricule
+//           if (!student.id || !student.nom || !student.prenom || !student.matricule) {
+//             console.warn('Skipping invalid student:', student);
+//             continue;
+//           }
 
-          const classroomData = {
-            name: classroom.name,
-            level: classroom.level || 1,
-            section: classroom.section,
-            teacherId: classroom.teacherId || null,
-            capacity: classroom.capacity || 30,
-            studentIds: classroom.studentIds || [],
-            createdAt: classroom.createdAt || new Date().toISOString()
-          };
+//           const studentData = {
+//             matricule: student.matricule, // Ajout du matricule
+//             nom: student.nom,
+//             post_nom: student.post_nom || '',
+//             prenom: student.prenom,
+//             date_naissance: student.date_naissance || '',
+//             lieu_naissance: student.lieu_naissance || '',
+//             sexe: student.sexe || 'M',
+//             nationalite: student.nationalite || '',
+//             adresse: student.adresse || '',
+//             contacts: student.contacts || [],
+//             niveau_etude: student.niveau_etude || '',
+//             etablissement_precedent: student.etablissement_precedent || '',
+//             option_choisie: student.option_choisie || '',
+//             created_at: student.created_at || new Date().toISOString()
+//           };
 
-          const existing = await getClassroomById(classroom.id);
-          if (!existing) {
-            await createClassroom(classroomData);
-            processedCount++;
-          }
-        } catch (classroomError) {
-          console.error(`Error processing classroom ${classroom.id}:`, classroomError);
-        }
-      }
+//           const existing = await getStudentById(student.id);
+//           if (!existing) {
+//             await createStudent(studentData);
+//             processedCount++;
+//           }
+//         } catch (studentError) {
+//           console.error(`Error processing student ${student.id}:`, studentError);
+//         }
+//       }
       
-      result.count = processedCount;
-    } else {
-      console.log('Uploading classrooms to Supabase...');
-      const classrooms = await getAllClassrooms();
-      console.log(`Found ${classrooms.length} local classrooms to sync`);
+//       result.count = processedCount;
+//     } else {
+//       console.log('Uploading students to Supabase...');
+//       const students = await getAllStudents();
+//       console.log(`Found ${students.length} local students to sync`);
       
-      if (classrooms.length === 0) {
-        result.count = 0;
-        result.success = true;
-        return result;
-      }
+//       if (students.length === 0) {
+//         result.count = 0;
+//         result.success = true;
+//         return result;
+//       }
 
-      // Prepare batch with proper createdAt field
-      const batch = classrooms.map(classroom => ({
-        id: classroom.id,
-        name: classroom.name,
-        level: classroom.level,
-        section: classroom.section,
-        teacherId: classroom.teacherId,
-        capacity: classroom.capacity,
-        studentIds: classroom.studentIds || [],
-        createdAt: classroom.createdAt || new Date().toISOString(),
-        updatedAt: classroom.updatedAt || new Date().toISOString()
-      }));
+//       // Préparation du batch avec matricule
+//       const batch = students.map(student => ({
+//         id: student.id,
+//         matricule: student.matricule, // Inclure le matricule
+//         nom: student.nom,
+//         post_nom: student.post_nom,
+//         prenom: student.prenom,
+//         date_naissance: student.date_naissance,
+//         lieu_naissance: student.lieu_naissance,
+//         sexe: student.sexe,
+//         nationalite: student.nationalite,
+//         adresse: student.adresse,
+//         contacts: JSON.stringify(student.contacts || []),
+//         niveau_etude: student.niveau_etude,
+//         etablissement_precedent: student.etablissement_precedent,
+//         option_choisie: student.option_choisie,
+//         created_at: student.created_at || new Date().toISOString(),
+//         updated_at: student.updated_at || new Date().toISOString()
+//       }));
 
-      const { error } = await supabase
-        .from('classrooms')
-        .upsert(batch);
+//       const { error } = await supabase
+//         .from('students')
+//         .upsert(batch);
       
-      if (error) {
-        console.error('Supabase classrooms upsert error:', error);
-        throw error;
-      }
+//       if (error) {
+//         console.error('Supabase students upsert error:', error);
+//         throw error;
+//       }
       
-      result.count = classrooms.length;
-    }
+//       result.count = students.length;
+//     }
     
-    result.success = true;
-  } catch (error) {
-    console.error('Full classrooms sync error:', error);
-    result.error = error instanceof Error ? error.message : JSON.stringify(error);
-  }
+//     result.success = true;
+//   } catch (error) {
+//     console.error('Full students sync error:', error);
+//     result.error = error instanceof Error ? error.message : JSON.stringify(error);
+//   }
   
-  return result;
-}
+//   return result;
+// }
+
+
 
 
 // Synchronisation des cours

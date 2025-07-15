@@ -47,7 +47,7 @@ export async function sendBulkEmail(
       content: htmlContent,
       recipientType,
       specificRecipients: recipientType === 'SPECIFIC' ? recipientEmails : undefined,
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     });
 
     return await response.json();
