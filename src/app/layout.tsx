@@ -562,7 +562,7 @@ function Sidebar() {
 
   const navLinks = [
     { href: '/', label: 'Accueil', icon: <FaHome /> },
-    { href: '/students/register', label: 'Inscription', icon: <FaUserPlus /> },
+    // { href: '/students/register', label: 'Inscription', icon: <FaUserPlus /> },
     { href: '/students', label: 'Élèves', icon: <FaUsers /> },
     { href: '/parents', label: 'Parents', icon: <FaUsers /> },
     { href: '/teacher', label: 'Enseignants', icon: <FaChalkboardTeacher /> },
@@ -571,7 +571,7 @@ function Sidebar() {
     { href: '/schedule', label: 'Planification', icon: <FaChalkboardTeacher /> },
     { href: '/schedule/view', label: 'Horaire', icon: <FaChalkboardTeacher /> },
     { href: '/absences', label: 'Absences', icon: <FaChalkboardTeacher /> },
-    { href: '/communication', label: 'Messages', icon: <FaMessage /> },
+    // { href: '/communication', label: 'Messages', icon: <FaMessage /> },
     { href: '/comptabilite', label: 'Comptabilité', icon: <FaDollarSign /> },
     { href: '/annonces', label: 'Annonces', icon: <FaDollarSign /> },
     { href: '/communication/broadcast', label: 'Mail', icon: <FaMailBulk /> }
