@@ -694,6 +694,7 @@ import {
 } from 'react-icons/fi'
 import { PdfReportGenerator } from '@/components/PdfReportGenerator'
 import AnnoncePage from '@/components/AnnoncePage'
+import ParentAnnonces from '@/components/ParentAnnonce'
 
 export default function ParentPage() {
   const { user } = useAuth()
@@ -914,6 +915,7 @@ export default function ParentPage() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
+          
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mes Enfants</h1>
           <div className="flex items-center space-x-4">
             <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
@@ -934,37 +936,12 @@ export default function ParentPage() {
         </div>
 
         {/* Announcements Panel */}
-        {showAnnouncements && (
-          <div className="mb-8 bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="bg-blue-600 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white flex items-center">
-                <FiMessageSquare className="mr-2" />
-                Annonces de l'école
-              </h2>
-              <button 
-                onClick={() => setShowAnnouncements(false)}
-                className="text-white hover:text-blue-200"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            {announcements.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
-                <p>Aucune annonce disponible pour le moment</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-               <AnnoncePage/>
-              </div>
-            )}
-          </div>
-        )}
-        
+        <div>
+          <ParentAnnonces/>
+        </div>
+      
         {students.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center">
+          <div className="bg-white rounded-lg shadow p text-center">
             <div className="text-gray-400 mb-4">
               <FiUser className="inline-block text-4xl" />
             </div>

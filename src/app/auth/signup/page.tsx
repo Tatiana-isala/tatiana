@@ -20,31 +20,7 @@
 //   const router = useRouter();
 //   const [syncStatus, setSyncStatus] = useState('');
 //   const [isSyncing, setIsSyncing] = useState(false);
-
-
-
-
-
-
-//   // const { user } = useAuth();
-
-//   // useEffect(() => {
-//   //   if (user && user.role !== 'admin') {
-//   //     router.push('/'); // Rediriger les non-admins
-//   //   }
-//   // }, [user, router]);
-
-//   // if (!user || user.role !== 'admin') {
-//   //   return (
-//   //     <div className="min-h-screen flex items-center justify-center">
-//   //       <div className="text-center">
-//   //         <h1 className="text-2xl font-bold mb-4">Accès refusé</h1>
-//   //         <p>Seuls les administrateurs peuvent accéder à cette page.</p>
-//   //       </div>
-//   //     </div>
-//   //   );
-//   // }
-
+//   const [successMessage, setSuccessMessage] = useState('');
 
 //   const handlePullData = async () => {
 //     setIsSyncing(true);
@@ -133,6 +109,7 @@
 //     }
 
 //     setIsSubmitting(true);
+//     setSuccessMessage('');
 //     try {
 //       await signUp({ 
 //         email: formData.email || null, 
@@ -141,7 +118,17 @@
 //         password: formData.password,
 //         phone: formData.phone 
 //       });
-//       router.push('/admin');
+      
+//       // Réinitialiser le formulaire après succès
+//       setFormData({
+//         name: '',
+//         email: '',
+//         phone: '',
+//         password: '',
+//         role: 'parent'
+//       });
+      
+//       setSuccessMessage('Utilisateur créé avec succès!');
 //     } catch (err: any) {
 //       if (err.message.includes('email')) {
 //         setErrors({
@@ -168,6 +155,12 @@
 //         {errors.form && (
 //           <div className="mb-6 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
 //             {errors.form}
+//           </div>
+//         )}
+
+//         {successMessage && (
+//           <div className="mb-6 p-3 bg-green-50 text-green-600 rounded-lg text-sm">
+//             {successMessage}
 //           </div>
 //         )}
 
@@ -199,10 +192,6 @@
 //         )}
 
 //         <form onSubmit={handleSubmit} className="space-y-5">
-//           {/* Les champs du formulaire restent inchangés */}
-//           {/* ... */}
-
-
 //           <div>
 //             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
 //               Nom complet <span className="text-red-500">*</span>
@@ -323,9 +312,6 @@
 //             </select>
 //           </div>
 
-        
-
-          
 //           <button
 //             type="submit"
 //             disabled={isSubmitting}
@@ -339,9 +325,9 @@
 //                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
 //                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 //                 </svg>
-//                 Inscription en cours...
+//                 Création en cours...
 //               </>
-//             ) : 'S\'inscrire'}
+//             ) : 'Créer un utilisateur'}
 //           </button>
 //         </form>
 
@@ -352,13 +338,11 @@
 //     </div>
 //   );
 // }
-
 'use client'
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
-import { importFromSupabase, exportToSupabase } from '@/lib/db';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -370,47 +354,19 @@ export default function SignUp() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signUp } = useAuth();
+  const { user, signUp } = useAuth();
   const router = useRouter();
-  const [syncStatus, setSyncStatus] = useState('');
-  const [isSyncing, setIsSyncing] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [accessCode, setAccessCode] = useState('');
+  const [accessError, setAccessError] = useState('');
+  const [isAdminVerified, setIsAdminVerified] = useState(false);
 
-  const handlePullData = async () => {
-    setIsSyncing(true);
-    setSyncStatus('Téléchargement des données...');
-    try {
-      const count = await importFromSupabase();
-      setSyncStatus(`Succès! ${count} utilisateurs importés depuis Supabase.`);
-    } catch (error) {
-      setSyncStatus('Erreur lors du téléchargement: ' + (error as Error).message);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  const handlePushData = async () => {
-    setIsSyncing(true);
-    setSyncStatus('Envoi des données...');
-    try {
-      const count = await exportToSupabase();
-      setSyncStatus(`Succès! ${count} utilisateurs exportés vers Supabase.`);
-    } catch (error) {
-      setSyncStatus('Erreur lors de l\'envoi: ' + (error as Error).message);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
+  // Vérifie si l'utilisateur est déjà admin connecté
   useEffect(() => {
-    if (Object.keys(errors).length > 0) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.form;
-        return newErrors;
-      });
+    if (user?.role === 'admin') {
+      setIsAdminVerified(true);
     }
-  }, [formData]);
+  }, [user]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -473,7 +429,6 @@ export default function SignUp() {
         phone: formData.phone 
       });
       
-      // Réinitialiser le formulaire après succès
       setFormData({
         name: '',
         email: '',
@@ -486,7 +441,11 @@ export default function SignUp() {
     } catch (err: any) {
       if (err.message.includes('email')) {
         setErrors({
-          email: 'Veuillez utiliser un autre email (déjà utilisé)'
+          email: 'Email déjà utilisé'
+        });
+      } else if (err.message.includes('phone')) {
+        setErrors({
+          phone: 'Numéro de téléphone déjà utilisé'
         });
       } else {
         setErrors({
@@ -498,12 +457,77 @@ export default function SignUp() {
     }
   };
 
+  const handleAccessCodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (accessCode === 'tatiana12345') {
+      setIsAdminVerified(true);
+    } else {
+      setAccessError('Code secret incorrect');
+    }
+  };
+
+  // Si l'utilisateur n'est pas admin vérifié, afficher le formulaire de code secret
+  if (!isAdminVerified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Accès administrateur requis</h1>
+            <p className="text-gray-600 mt-2">La création de compte est réservée aux administrateurs.</p>
+            <p className="text-gray-600">Veuillez entrer le code secret pour continuer.</p>
+          </div>
+
+          <form onSubmit={handleAccessCodeSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="accessCode" className="block text-sm font-medium text-gray-700 mb-1">
+                Code secret
+              </label>
+              <input
+                id="accessCode"
+                type="password"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value)}
+                placeholder="Entrez le code secret"
+                required
+              />
+              {accessError && (
+                <p className="mt-1 text-sm text-red-500 flex items-center">
+                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  {accessError}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 px-4 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              Valider le code
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className="w-full py-3 px-4 rounded-lg font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              Retour à l'accueil
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Si l'utilisateur est admin vérifié, afficher le formulaire d'inscription
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Créer un compte</h1>
-          <p className="text-gray-600 mt-2">Remplissez le formulaire pour vous inscrire</p>
+          <p className="text-gray-600 mt-2">Remplissez le formulaire pour créer un nouvel utilisateur</p>
         </div>
 
         {errors.form && (
@@ -515,33 +539,6 @@ export default function SignUp() {
         {successMessage && (
           <div className="mb-6 p-3 bg-green-50 text-green-600 rounded-lg text-sm">
             {successMessage}
-          </div>
-        )}
-
-        {/* Boutons de synchronisation pour l'admin */}
-        {useAuth().user?.role === 'admin' && (
-          <div className="mb-6 space-y-2">
-            <button
-              onClick={handlePullData}
-              disabled={isSyncing}
-              className="w-full py-2 px-4 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 disabled:opacity-50"
-            >
-              {isSyncing ? 'Import en cours...' : 'Importer depuis Supabase'}
-            </button>
-            <button
-              onClick={handlePushData}
-              disabled={isSyncing}
-              className="w-full py-2 px-4 bg-green-100 text-green-800 rounded-md hover:bg-green-200 disabled:opacity-50"
-            >
-              {isSyncing ? 'Export en cours...' : 'Exporter vers Supabase'}
-            </button>
-            {syncStatus && (
-              <div className={`p-2 text-sm rounded-md ${
-                syncStatus.includes('Erreur') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-              }`}>
-                {syncStatus}
-              </div>
-            )}
           </div>
         )}
 

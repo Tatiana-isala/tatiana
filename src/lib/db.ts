@@ -70,16 +70,16 @@ interface StudentFormData {
   option_choisie: string;
 }
 
-interface TeacherInfo {
-  id: string;
-  userId: string;
-  matierePrincipale: string;
-  classesResponsables: string[];
-  anneesExperience: number;
-  statut: 'titulaire' | 'remplacant' | 'stagiaire';
-  created_at: string;
-  updated_at: string;
-}
+// interface TeacherInfo {
+//   id: string;
+//   userId: string;
+//   matierePrincipale: string;
+//   classesResponsables: string[];
+//   anneesExperience: number;
+//   statut: 'titulaire' | 'remplacant' | 'stagiaire';
+//   created_at: string;
+//   updated_at: string;
+// }
 export interface ClassroomStudent {
   id: string;
   classroom_id: string;
@@ -169,7 +169,7 @@ export interface ScheduleFormData {
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Configuration IndexedDB
-const DB_NAME = 'State2';
+const DB_NAME = 'grandeurDB';
 const DB_VERSION = 1; // Version incrémentée pour ajouter les classes
 const USERS_STORE = 'users';
 const STUDENTS_STORE = 'students';
@@ -792,15 +792,217 @@ export async function getTeacherInfo(userId: string): Promise<TeacherInfo | null
   });
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Mettez à jour l'interface TeacherInfo
+interface TeacherInfo {
+  id: string;
+  userId: string;
+  matricule: string;
+  dateNaissance: string;
+  sexe: 'M' | 'F';
+  adresse: string;
+  situationMatrimoniale: 'CELIBATAIRE' | 'MARIE' | 'DIVORCE' | 'VEUF';
+  grade: 'LICENCE' | 'MASTER' | 'DIPLOME' | 'DOCTORAT' | 'AUTRE';
+  matierePrincipale: string;
+  classesResponsables: string[];
+  anneesExperience: number;
+  statut: 'titulaire' | 'remplacant' | 'stagiaire';
+  created_at: string;
+  updated_at: string;
+}
+
+// Ajoutez cette interface pour le formulaire
+interface TeacherInfoFormData {
+  matricule?: string;
+  dateNaissance: string;
+  sexe: 'M' | 'F';
+  adresse: string;
+  situationMatrimoniale: 'CELIBATAIRE' | 'MARIE' | 'DIVORCE' | 'VEUF';
+  grade: 'LICENCE' | 'MASTER' | 'DIPLOME' | 'DOCTORAT' | 'AUTRE';
+  matierePrincipale: string;
+  classesResponsables: string[];
+  anneesExperience: number;
+  statut: 'titulaire' | 'remplacant' | 'stagiaire';
+}
+
+
+
+// export async function addTeacherInfo(
+//   userId: string, 
+//   teacherData: Omit<TeacherInfo, 'id' | 'userId' | 'created_at' | 'updated_at'>
+// ): Promise<void> {
+//   const db = await initDB();
+  
+//   const completeInfo: TeacherInfo = {
+//     id: uuidv4(),
+//     userId,
+//     ...teacherData,
+//     created_at: new Date().toISOString(),
+//     updated_at: new Date().toISOString()
+//   };
+
+//   return new Promise((resolve, reject) => {
+//     const tx = db.transaction(TEACHERS_STORE, 'readwrite');
+//     const store = tx.objectStore(TEACHERS_STORE);
+//     const request = store.add(completeInfo);
+    
+//     request.onsuccess = () => resolve();
+//     request.onerror = () => reject(request.error);
+//   });
+// }
+
+// export async function updateTeacherInfo(
+//   userId: string,
+//   teacherData: Partial<TeacherInfo>
+// ): Promise<void> {
+//   const db = await initDB();
+  
+//   return new Promise((resolve, reject) => {
+//     const tx = db.transaction(TEACHERS_STORE, 'readwrite');
+//     const store = tx.objectStore(TEACHERS_STORE);
+//     const index = store.index('userId');
+//     const getRequest = index.get(userId);
+    
+//     getRequest.onsuccess = () => {
+//       const existingData = getRequest.result;
+//       if (existingData) {
+//         const updatedInfo = {
+//           ...existingData,
+//           ...teacherData,
+//           updated_at: new Date().toISOString()
+//         };
+//         const updateRequest = store.put(updatedInfo);
+//         updateRequest.onsuccess = () => resolve();
+//         updateRequest.onerror = () => reject(updateRequest.error);
+//       } else {
+//         reject(new Error('Informations enseignant non trouvées'));
+//       }
+//     };
+//     getRequest.onerror = () => reject(getRequest.error);
+//   });
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Ajoutez cette fonction pour compter les enseignants
+export async function getTeachersCount(): Promise<number> {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(TEACHERS_STORE, 'readonly');
+    const store = tx.objectStore(TEACHERS_STORE);
+    const request = store.count();
+    
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// Mettez à jour la fonction addTeacherInfo
 export async function addTeacherInfo(
   userId: string, 
-  teacherData: Omit<TeacherInfo, 'id' | 'userId' | 'created_at' | 'updated_at'>
+  teacherData: Omit<TeacherInfo, 'id' | 'userId' | 'created_at' | 'updated_at' | 'matricule'>
 ): Promise<void> {
   const db = await initDB();
   
+  // Récupérer l'utilisateur et le nombre d'enseignants
+  const [user, count] = await Promise.all([
+    getUserById(userId),
+    getTeachersCount()
+  ]);
+
+  // Générer le matricule selon la nouvelle logique
+  const matricule = `${count + 1}${user?.name.substring(0, 2).toUpperCase()}${new Date().getFullYear()}`;
+
   const completeInfo: TeacherInfo = {
     id: uuidv4(),
     userId,
+    matricule,
     ...teacherData,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -816,6 +1018,7 @@ export async function addTeacherInfo(
   });
 }
 
+// Mettez à jour la fonction updateTeacherInfo
 export async function updateTeacherInfo(
   userId: string,
   teacherData: Partial<TeacherInfo>
@@ -831,11 +1034,15 @@ export async function updateTeacherInfo(
     getRequest.onsuccess = () => {
       const existingData = getRequest.result;
       if (existingData) {
+        // Ne pas permettre la modification du matricule
+        const { matricule, ...restData } = teacherData;
+        
         const updatedInfo = {
           ...existingData,
-          ...teacherData,
+          ...restData,
           updated_at: new Date().toISOString()
         };
+        
         const updateRequest = store.put(updatedInfo);
         updateRequest.onsuccess = () => resolve();
         updateRequest.onerror = () => reject(updateRequest.error);
@@ -846,6 +1053,35 @@ export async function updateTeacherInfo(
     getRequest.onerror = () => reject(getRequest.error);
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export async function getEnseignantsWithDetails(): Promise<(User & { teacherInfo?: TeacherInfo })[]> {
   const db = await initDB();
@@ -2602,12 +2838,6 @@ export async function justifyAbsence(
 
 
 
-
-
-
-
-
-
 // Ajoutez ces fonctions dans db.ts
 export async function getAbsenceStatistics(classroom_id?: string): Promise<{
     daily: { date: string; count: number }[];
@@ -2659,11 +2889,6 @@ export async function getAbsenceStatistics(classroom_id?: string): Promise<{
         byStudent: studentStats.sort((a, b) => b.count - a.count)
     };
 }
-
-
-
-
-
 
 
 // Types pour la synchronisation
