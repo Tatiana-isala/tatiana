@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { 
   getUserById, 
   getTeacherInfo,
-  updateTeacherInfo,
+  updateTeacherInfo,TeacherFormData,
   addTeacherInfo,getTeachersCount,
   User
 } from '@/lib/db'
@@ -31,18 +31,18 @@ export default function EditTeacherPage() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [teacher, setTeacher] = useState<User | null>(null)
-  const [formData, setFormData] = useState({
-    matricule: '',
-    dateNaissance: '',
-    sexe: 'M' as 'M' | 'F',
-    adresse: '',
-    situationMatrimoniale: 'CELIBATAIRE' as 'CELIBATAIRE' | 'MARIE' | 'DIVORCE' | 'VEUF',
-    grade: 'LICENCE' as 'LICENCE' | 'MASTER' | 'DIPLOME' | 'DOCTORAT' | 'AUTRE',
-    matierePrincipale: '',
-    classesResponsables: [] as string[],
-    anneesExperience: 0,
-    statut: 'titulaire' as 'titulaire' | 'remplacant' | 'stagiaire'
-  })
+  const [formData, setFormData] = useState<TeacherFormData>({
+  matricule: '',
+  dateNaissance: '',
+  sexe: 'M',
+  adresse: '',
+  situationMatrimoniale: 'CELIBATAIRE',
+  grade: 'LICENCE',
+  matierePrincipale: '',
+  classesResponsables: [],
+  anneesExperience: 0,
+  statut: 'titulaire'
+})
   const [newClass, setNewClass] = useState('')
 
  useEffect(() => {
@@ -121,29 +121,64 @@ export default function EditTeacherPage() {
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      setLoading(true)
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   try {
+  //     setLoading(true)
       
-      const existingInfo = await getTeacherInfo(id as string)
+  //     const existingInfo = await getTeacherInfo(id as string)
       
-      if (existingInfo) {
-        await updateTeacherInfo(id as string, formData)
-      } else {
-        await addTeacherInfo(id as string, formData)
-      }
+  //     if (existingInfo) {
+  //       await updateTeacherInfo(id as string, formData)
+  //     } else {
+  //       await addTeacherInfo(id as string, formData)
+  //     }
       
-      toast.success('Informations mises à jour avec succès')
-      router.push(`/teacher/${id}`)
-    } catch (error) {
-      console.error('Erreur:', error)
-      toast.error('Erreur lors de la mise à jour')
-    } finally {
-      setLoading(false)
-    }
-  }
+  //     toast.success('Informations mises à jour avec succès')
+  //     router.push(`/teacher/${id}`)
+  //   } catch (error) {
+  //     console.error('Erreur:', error)
+  //     toast.error('Erreur lors de la mise à jour')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    setLoading(true);
+    
+    const existingInfo = await getTeacherInfo(id as string);
+    
+    if (existingInfo) {
+      // For update, send the full formData including matricule
+      await updateTeacherInfo(id as string, formData);
+    } else {
+      // For create, destructure to exclude matricule and send only the required fields
+      const { matricule, ...teacherInfo } = formData;
+      await addTeacherInfo(id as string, {
+        dateNaissance: teacherInfo.dateNaissance,
+        sexe: teacherInfo.sexe,
+        adresse: teacherInfo.adresse,
+        situationMatrimoniale: teacherInfo.situationMatrimoniale,
+        grade: teacherInfo.grade,
+        matierePrincipale: teacherInfo.matierePrincipale,
+        classesResponsables: teacherInfo.classesResponsables,
+        anneesExperience: teacherInfo.anneesExperience,
+        statut: teacherInfo.statut
+      });
+    }
+    
+    toast.success('Informations mises à jour avec succès');
+    router.push(`/teacher/${id}`);
+  } catch (error) {
+    console.error('Erreur:', error);
+    toast.error('Erreur lors de la mise à jour');
+  } finally {
+    setLoading(false);
+  }
+};
   if (loading && !teacher) {
     return (
       <div className="flex justify-center items-center h-screen">

@@ -169,7 +169,7 @@ export interface ScheduleFormData {
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Configuration IndexedDB
-const DB_NAME = 'grandeurDB';
+const DB_NAME = 'grandeurDBv3';
 const DB_VERSION = 1; // Version incrémentée pour ajouter les classes
 const USERS_STORE = 'users';
 const STUDENTS_STORE = 'students';
@@ -416,14 +416,22 @@ if (!db.objectStoreNames.contains('absenceRecords')) {
 
 
 
-        // Création de la store teachers
-        if (!db.objectStoreNames.contains(TEACHERS_STORE)) {
-          const teacherStore = db.createObjectStore(TEACHERS_STORE, { keyPath: 'id' });
-          teacherStore.createIndex('userId', 'userId', { unique: true });
-          teacherStore.createIndex('matierePrincipale', 'matierePrincipale', { unique: false });
-          teacherStore.createIndex('statut', 'statut', { unique: false });
-        }
-
+      if (!db.objectStoreNames.contains(TEACHERS_STORE)) {
+  const teacherStore = db.createObjectStore(TEACHERS_STORE, { keyPath: 'id' });
+  
+  // Ajouter tous les indexes nécessaires
+  teacherStore.createIndex('userId', 'userId', { unique: true });
+  teacherStore.createIndex('matricule', 'matricule', { unique: true });
+  teacherStore.createIndex('dateNaissance', 'dateNaissance', { unique: false });
+  teacherStore.createIndex('sexe', 'sexe', { unique: false });
+  teacherStore.createIndex('adresse', 'adresse', { unique: false });
+  teacherStore.createIndex('situationMatrimoniale', 'situationMatrimoniale', { unique: false });
+  teacherStore.createIndex('grade', 'grade', { unique: false });
+  teacherStore.createIndex('matierePrincipale', 'matierePrincipale', { unique: false });
+  teacherStore.createIndex('classesResponsables', 'classesResponsables', { unique: false, multiEntry: true });
+  teacherStore.createIndex('anneesExperience', 'anneesExperience', { unique: false });
+  teacherStore.createIndex('statut', 'statut', { unique: false });
+}
         // Création de la store classrooms
         if (!db.objectStoreNames.contains(CLASSROOMS_STORE)) {
           const classroomStore = db.createObjectStore(CLASSROOMS_STORE, { keyPath: 'id' });
@@ -832,7 +840,7 @@ interface TeacherInfo {
 }
 
 // Ajoutez cette interface pour le formulaire
-interface TeacherInfoFormData {
+export interface TeacherFormData {
   matricule?: string;
   dateNaissance: string;
   sexe: 'M' | 'F';
