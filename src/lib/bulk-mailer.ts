@@ -92,7 +92,7 @@ export const bulkEmailTemplate = (content: string, senderName?: string, classroo
 <body>
   <div class="header">
     <div class="logo-container">
-      <img src="https://i.postimg.cc/CxKYPGrB/Pngtree-school-logo-design-vector-9037661.png" alt="Logo École" class="logo">
+<img src="https://i.ibb.co/jPDkJHzC/grandeur.webp" alt="grandeur" border="0" />
     </div>
     <h1 class="header-title">École Secondaire Grandeur</h1>
     ${classroomName ? `<p class="header-sub">Pour les parents de ${classroomName}</p>` : ''}
