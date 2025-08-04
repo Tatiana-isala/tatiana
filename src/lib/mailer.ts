@@ -138,10 +138,14 @@ export async function sendPaymentConfirmationEmail(
     </head>
     <body>
       <div class="header">
-        <h1>Confirmation de Paiement</h1>
+       <div class="logo-container">
+<img src="https://i.ibb.co/jPDkJHzC/grandeur.webp" alt="grandeur" border="0" />
+    </div>
+        <h1>Confirmation de Paiement - La Grandeur</h1>
       </div>
       <div class="content">
         <p>Cher parent,</p>
+        
         <p>Nous vous confirmons la réception du paiement pour <strong>${studentName}</strong>.</p>
         
         <div class="amount">${paymentDetails.amount.toLocaleString()} CDF</div>
