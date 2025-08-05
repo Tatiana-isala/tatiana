@@ -98,7 +98,7 @@
 import { usePathname } from 'next/navigation'
 import { useAuth } from '../context/AuthContext'
 import Link from 'next/link'
-import { FaSignOutAlt, FaUser, FaHome } from 'react-icons/fa'
+import { FaSignOutAlt, FaUser, FaHome,FaCalendarAlt } from 'react-icons/fa'
 import { FaMessage } from 'react-icons/fa6'
 import { useState } from 'react'
 
