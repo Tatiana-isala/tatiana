@@ -110,8 +110,8 @@ const pathname = usePathname()
 
   const navLinks = [
     { href: '/parent', label: 'Accueil', icon: <FaHome className="text-blue-500" /> },
-    { href: '/parent/children', label: 'Mes Enfants', icon: <FaUser className="text-indigo-500" /> },
-    { href: '/communication', label: 'Messages', icon: <FaMessage className="text-teal-500" /> },
+     { href: '/schedule/view', label: 'Horaire', icon: <FaCalendarAlt className="text-blue-400" /> },
+    { href: '/communication', label: 'Messages ', icon: <FaMessage className="text-teal-500" /> },
   ]
 
   return (
