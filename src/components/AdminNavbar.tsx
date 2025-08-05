@@ -33,6 +33,7 @@ function AdminNavbar() {
     { href: '/teacher', label: 'Enseignants', icon: <FaChalkboardTeacher className="text-amber-500" /> },
     { href: '/courses', label: 'Cours', icon: <FaBook className="text-emerald-500" /> },
     { href: '/classes', label: 'Classes', icon: <MdClass className="text-purple-500" /> },
+     { href: '/communication', label: 'MESSAGE', icon: <IoMdNotifications className="text-pink-500" /> },
     { href: '/schedule', label: 'Planification', icon: <MdSchedule className="text-rose-500" /> },
     { href: '/schedule/view', label: 'Horaire', icon: <FaCalendarAlt className="text-blue-400" /> },
     { href: '/absences', label: 'Absences', icon: <FaClipboardCheck className="text-red-500" /> },
