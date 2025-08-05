@@ -197,7 +197,7 @@ import {
   FaCalendarAlt,
   FaBook,
   FaClipboardCheck,
-  FaBullhorn,
+  FaBullhorn,FaEnvelope ,
   FaUserGraduate
 } from 'react-icons/fa'
 import { useState, Suspense } from 'react'
@@ -267,6 +267,7 @@ function Sidebar() {
     { href: '/', label: 'Accueil', icon: <FaHome className="text-blue-500" /> },
     { href: '/students', label: 'Élèves', icon: <FaUserGraduate className="text-indigo-500" /> },
     { href: '/parents', label: 'Parents', icon: <FaUsers className="text-teal-500" /> },
+    { href: '/communication', label: 'MESSAGE', icon: <FaEnvelope className="text-pink-500" /> },
     { href: '/teacher', label: 'Enseignants', icon: <FaChalkboardTeacher className="text-amber-500" /> },
     { href: '/courses', label: 'Cours', icon: <FaBook className="text-emerald-500" /> },
     { href: '/classes', label: 'Classes', icon: <MdClass className="text-purple-500" /> },
